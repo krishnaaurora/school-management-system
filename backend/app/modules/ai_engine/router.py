@@ -6,7 +6,7 @@ from app.modules.ai_engine.schemas import (
     AssistantQueryRequest,
     AssistantQueryResponse,
 )
-from app.modules.ai_engine.service import AiEngineService
+from app.modules.ai_engine.controller import AiEngineController
 from app.core.dependencies import get_current_user
 
 router = APIRouter(prefix="/ai", tags=["AI Leave & Operational Intelligence"])
@@ -17,9 +17,9 @@ async def analyze_leave(
     data: LeaveAnalysisRequest,
     current_user: Dict[str, Any] = Depends(get_current_user),
 ):
-    return AiEngineService.evaluate_leave_impact(data)
+    return await AiEngineController.evaluate_leave_impact(data)
 
 
 @router.post("/query", response_model=AssistantQueryResponse, summary="Natural Language School Operations Query")
 async def assistant_query(data: AssistantQueryRequest):
-    return AiEngineService.query_assistant(data)
+    return await AiEngineController.query_assistant(data)
