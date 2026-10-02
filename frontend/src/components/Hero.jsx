@@ -225,21 +225,26 @@ export default function Hero({ onOpenAdmissions, onOpenAssistant }) {
 
       </div>
 
-      {/* Scroll cue */}
+      {/* Scroll cue (Clean, no white pill, high-visibility arrow) */}
       <motion.button
         onClick={scrollToAbout}
-        className="absolute bottom-6 sm:bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 px-4 py-1.5 rounded-full bg-white/75 backdrop-blur-md border border-[#C5A880]/40 shadow-sm
-                   text-[#0D3B2E] hover:text-[#07241B] hover:bg-white/90 transition-all focus:outline-none cursor-pointer"
+        className="absolute bottom-6 sm:bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5
+                   text-[#0D3B2E] hover:text-[#07241B] transition-all focus:outline-none cursor-pointer group"
         aria-label="Scroll down"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 3.1, duration: 0.6 }}
       >
-        <span className="text-[10px] uppercase tracking-[0.22em] font-bold">Discover GIS</span>
+        <span className="text-[10px] sm:text-[11px] uppercase tracking-[0.24em] font-bold drop-shadow-[0_1px_6px_rgba(255,255,255,0.95)]">
+          Discover GIS
+        </span>
         <motion.svg
-          className="w-3.5 h-3.5 text-[#96661E]"
-          fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"
-          animate={{ y: [0, 4, 0] }}
+          className="w-4 h-4 text-[#8C5D14] group-hover:text-[#6B4408] drop-shadow-[0_1px_4px_rgba(255,255,255,0.9)]"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.8"
+          viewBox="0 0 24 24"
+          animate={{ y: [0, 5, 0] }}
           transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
         >
           <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
