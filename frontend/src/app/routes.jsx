@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import LandingPage from '../modules/landing/pages/LandingPage';
 import LoginPage from '../modules/auth/pages/LoginPage';
 import AdminPortalPage from '../modules/admin/pages/AdminPortalPage';
+import TeacherPortalPage from '../modules/teacher/pages/TeacherPortalPage';
 import SchoolAssistantModal from '../modules/assistant/components/SchoolAssistantModal';
 import AdmissionsModal from '../modules/admissions/components/AdmissionsModal';
 
@@ -9,6 +10,7 @@ export const ROUTES = {
   HOME: 'landing',
   LOGIN: 'login',
   ADMIN: 'admin',
+  TEACHER: 'teacher',
 };
 
 export function AppRouter() {
@@ -21,6 +23,8 @@ export function AppRouter() {
       const hash = window.location.hash;
       if (hash === '#admin') {
         setCurrentView(ROUTES.ADMIN);
+      } else if (hash === '#teacher') {
+        setCurrentView(ROUTES.TEACHER);
       } else if (hash === '#login') {
         setCurrentView(ROUTES.LOGIN);
       } else {
@@ -46,14 +50,29 @@ export function AppRouter() {
         <AdminPortalPage
           onLogout={() => navigateTo(ROUTES.LOGIN, '#login')}
           onNavigateHome={() => navigateTo(ROUTES.HOME, '#home')}
+          onNavigateTeacher={() => navigateTo(ROUTES.TEACHER, '#teacher')}
+        />
+      )}
+
+      {currentView === ROUTES.TEACHER && (
+        <TeacherPortalPage
+          onLogout={() => navigateTo(ROUTES.LOGIN, '#login')}
+          onNavigateHome={() => navigateTo(ROUTES.HOME, '#home')}
+          onNavigateAdmin={() => navigateTo(ROUTES.ADMIN, '#admin')}
         />
       )}
 
       {currentView === ROUTES.LOGIN && (
         <LoginPage
           onNavigateHome={() => navigateTo(ROUTES.HOME, '#home')}
-          onLoginSuccess={(role) => {
-            if (role === 'admin') {
+          onLoginSuccess={(role, user) => {
+            const userRole = role || user?.role || '';
+            const email = (user?.email || '').toLowerCase();
+            
+            if (userRole === 'teacher' || email.includes('teacher') || email.includes('ananya')) {
+              navigateTo(ROUTES.TEACHER, '#teacher');
+            } else {
+              // Default to admin portal for admin/management
               navigateTo(ROUTES.ADMIN, '#admin');
             }
           }}
@@ -67,6 +86,8 @@ export function AppRouter() {
           onOpenAdmissions={() => setAdmissionsOpen(true)}
           onOpenAssistant={() => setAssistantOpen(true)}
           onOpenLogin={() => navigateTo(ROUTES.LOGIN, '#login')}
+          onOpenAdmin={() => navigateTo(ROUTES.ADMIN, '#admin')}
+          onOpenTeacher={() => navigateTo(ROUTES.TEACHER, '#teacher')}
         />
       )}
 

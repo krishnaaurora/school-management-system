@@ -11,7 +11,16 @@ export default function LoginPage({ onNavigateHome, onLoginSuccess }) {
 
   const handleLogin = async (identifier, password) => {
     const res = await login(identifier, password);
-    const user = res.user || {
+    const email = identifier.toLowerCase();
+    const isTeacher = email.includes('teacher') || email.includes('ananya');
+
+    const defaultUser = isTeacher ? {
+      id: 'GIS-T-023',
+      name: 'Ananya Sharma',
+      email: identifier,
+      role: 'teacher',
+      role_title: 'Mathematics Faculty',
+    } : {
       id: 'GIS-ADM-001',
       name: 'Admin GIS Desk',
       email: identifier,
@@ -19,8 +28,11 @@ export default function LoginPage({ onNavigateHome, onLoginSuccess }) {
       role_title: 'System Administrator',
     };
 
+    const user = res.user || defaultUser;
+    const role = user.role || (isTeacher ? 'teacher' : 'admin');
+
     if (onLoginSuccess) {
-      onLoginSuccess('admin', user);
+      onLoginSuccess(role, user);
     }
   };
 
@@ -117,7 +129,8 @@ export default function LoginPage({ onNavigateHome, onLoginSuccess }) {
                 <div className="flex flex-col gap-2">
                   <button
                     onClick={() => {
-                      if (onLoginSuccess) onLoginSuccess('admin', loggedInUser);
+                      const role = loggedInUser.role || (loggedInUser.email?.includes('teacher') ? 'teacher' : 'admin');
+                      if (onLoginSuccess) onLoginSuccess(role, loggedInUser);
                     }}
                     className="w-full py-2.5 px-4 rounded-xl bg-forest-900 hover:bg-forest-800 text-white font-semibold text-xs transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
                   >
