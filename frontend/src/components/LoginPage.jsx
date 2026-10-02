@@ -121,16 +121,16 @@ export default function LoginPage({ onNavigateHome, onLoginSuccess }) {
   return (
     <div className="min-h-screen w-full flex flex-col bg-[#F8F5EF] relative overflow-x-hidden font-sans">
       
-      {/* ── CLEAN TOP HEADER (Brand Only) ── */}
-      <header className="fixed top-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-b border-gray-200/80 px-4 sm:px-8 py-3.5 flex items-center justify-between shadow-xs">
+      {/* ── TRANSPARENT TOP HEADER (Brand Only) ── */}
+      <header className="fixed top-0 left-0 right-0 z-40 bg-transparent border-b border-white/10 px-4 sm:px-8 py-3.5 flex items-center justify-between">
         {/* Brand Link */}
         <div className="flex items-center gap-3 select-none">
           <GisEmblem size="md" />
           <div className="flex flex-col">
-            <span className="font-serif font-bold text-base sm:text-lg tracking-wide text-black leading-tight">
+            <span className="font-serif font-bold text-base sm:text-lg tracking-wide text-white leading-tight drop-shadow-sm">
               GREENFIELD
             </span>
-            <span className="text-[10px] sm:text-[11px] uppercase tracking-widest-plus text-charcoal-700 font-semibold">
+            <span className="text-[10px] sm:text-[11px] uppercase tracking-widest-plus text-gold-300 font-semibold drop-shadow-sm">
               International School
             </span>
           </div>
@@ -140,7 +140,7 @@ export default function LoginPage({ onNavigateHome, onLoginSuccess }) {
         {onNavigateHome && (
           <button
             onClick={onNavigateHome}
-            className="text-xs font-semibold text-charcoal-600 hover:text-forest-900 transition-colors px-3 py-1.5 rounded-md hover:bg-gray-100"
+            className="text-xs font-semibold text-white/85 hover:text-white transition-all px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 cursor-pointer"
           >
             School Website &rarr;
           </button>
