@@ -1,57 +1,27 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, CheckCircle2, LogOut, KeyRound } from 'lucide-react';
+import { ArrowRight, CheckCircle2, LogOut, KeyRound, AlertCircle } from 'lucide-react';
 import GisEmblem from '../../../components/ui/GisEmblem';
 import LoginForm from '../components/LoginForm';
 import { useAuth } from '../hooks/useAuth';
 
 export default function LoginPage({ onNavigateHome, onLoginSuccess }) {
-  const { user: loggedInUser, loading, login, logout, setUser } = useAuth();
+  const { user: loggedInUser, loading, login, logout } = useAuth();
   const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   const handleLogin = async (identifier, password) => {
-    const res = await login(identifier, password);
-    const email = identifier.toLowerCase();
-    const isStudent = email.includes('student') || email.includes('aarav');
-    const isTeacher = email.includes('teacher') || email.includes('ananya');
+    setErrorMessage(null);
+    try {
+      const res = await login(identifier, password);
+      const user = res?.user || res?.data?.user;
+      const role = (user?.role || '').toUpperCase();
 
-    let defaultUser;
-    let role;
-
-    if (isStudent) {
-      role = 'student';
-      defaultUser = {
-        id: 'GIS-STU-10A-024',
-        name: 'Aarav Kumar',
-        email: identifier,
-        role: 'student',
-        role_title: 'Class 10-A Student',
-      };
-    } else if (isTeacher) {
-      role = 'teacher';
-      defaultUser = {
-        id: 'GIS-T-023',
-        name: 'Ananya Sharma',
-        email: identifier,
-        role: 'teacher',
-        role_title: 'Mathematics Faculty',
-      };
-    } else {
-      role = 'admin';
-      defaultUser = {
-        id: 'GIS-ADM-001',
-        name: 'Admin GIS Desk',
-        email: identifier,
-        role: 'admin',
-        role_title: 'System Administrator',
-      };
-    }
-
-    const user = res.user || defaultUser;
-    const finalRole = user.role || role;
-
-    if (onLoginSuccess) {
-      onLoginSuccess(finalRole, user);
+      if (onLoginSuccess && user) {
+        onLoginSuccess(role, user);
+      }
+    } catch (err) {
+      setErrorMessage(err.message || 'Invalid email or password');
     }
   };
 
@@ -128,6 +98,13 @@ export default function LoginPage({ onNavigateHome, onLoginSuccess }) {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="w-full max-w-[350px] sm:max-w-[365px] bg-white rounded-2xl shadow-2xl border border-gray-100 p-5 sm:p-6 relative overflow-hidden"
           >
+            {errorMessage && (
+              <div className="mb-3 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2 animate-in fade-in">
+                <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
+                <span>{errorMessage}</span>
+              </div>
+            )}
+
             {loggedInUser ? (
               <div className="py-2 text-center">
                 <div className="w-14 h-14 rounded-full bg-forest-50 border-2 border-forest-800/30 flex items-center justify-center mx-auto mb-2.5">
@@ -135,26 +112,20 @@ export default function LoginPage({ onNavigateHome, onLoginSuccess }) {
                 </div>
 
                 <div className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider mb-2 border border-forest-800/20 bg-forest-50 text-forest-900">
-                  {loggedInUser.role_title || loggedInUser.role}
+                  {loggedInUser.role}
                 </div>
 
                 <h2 className="font-serif text-xl font-bold text-[#0B2E23] mb-0.5">
                   Welcome, {loggedInUser.name}
                 </h2>
                 <p className="text-[11px] text-gray-500 mb-3.5 font-mono">
-                  {loggedInUser.email} &bull; {loggedInUser.id}
+                  {loggedInUser.email}
                 </p>
 
                 <div className="flex flex-col gap-2">
                   <button
                     onClick={() => {
-                      const email = (loggedInUser.email || '').toLowerCase();
-                      let role = loggedInUser.role;
-                      if (!role) {
-                        if (email.includes('student')) role = 'student';
-                        else if (email.includes('teacher')) role = 'teacher';
-                        else role = 'admin';
-                      }
+                      const role = (loggedInUser.role || '').toUpperCase();
                       if (onLoginSuccess) onLoginSuccess(role, loggedInUser);
                     }}
                     className="w-full py-2.5 px-4 rounded-xl bg-forest-900 hover:bg-forest-800 text-white font-semibold text-xs transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"

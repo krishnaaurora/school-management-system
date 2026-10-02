@@ -14,12 +14,12 @@ def test_health_endpoint():
 def test_login_success():
     response = client.post(
         "/api/v1/auth/login",
-        json={"email": "Admingis@gmail.com", "password": "GIS@admin123"},
+        json={"email": "admingis@gmail.com", "password": "GIS@admin123"},
     )
     assert response.status_code == 200
     data = response.json()
     assert "access_token" in data
-    assert data["user"]["role"] == "admin"
+    assert data["user"]["role"].upper() == "ADMIN"
 
 
 def test_login_invalid():

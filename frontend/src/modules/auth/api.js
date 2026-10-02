@@ -7,4 +7,7 @@ export const authApi = {
   getMe: async () => {
     return ApiClient.get('/auth/me');
   },
+  logout: async () => {
+    return ApiClient.post('/auth/logout', {});
+  },
 };

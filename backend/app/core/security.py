@@ -1,13 +1,29 @@
 from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, Optional
 import jwt
-from passlib.context import CryptContext
+import bcrypt
 from app.core.config import settings
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+def get_password_hash(password: str) -> str:
+    """Hash a password using bcrypt with a salt."""
+    salt = bcrypt.gensalt()
+    return bcrypt.hashpw(password.encode("utf-8"), salt).decode("utf-8")
+
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    """Verify a plain password against its bcrypt hash."""
+    if not plain_password or not hashed_password:
+        return False
+    try:
+        return bcrypt.checkpw(plain_password.encode("utf-8"), hashed_password.encode("utf-8"))
+    except Exception:
+        # Fallback for plain text matching during initial dev transition if any
+        return plain_password == hashed_password
 
 
 def create_access_token(subject: Dict[str, Any], expires_delta: Optional[timedelta] = None) -> str:
+    """Generate a signed JWT token containing safe claims."""
     if expires_delta:
         expire = datetime.now(timezone.utc) + expires_delta
     else:
@@ -19,14 +35,5 @@ def create_access_token(subject: Dict[str, Any], expires_delta: Optional[timedel
 
 
 def decode_access_token(token: str) -> Dict[str, Any]:
+    """Decode and validate a JWT access token."""
     return jwt.decode(token, settings.JWT_SECRET, algorithms=[settings.JWT_ALGORITHM])
-
-
-def verify_password(plain_password: str, hashed_password: str) -> bool:
-    # Supports direct matching for initial seed accounts or bcrypt
-    if plain_password == hashed_password:
-        return True
-    try:
-        return pwd_context.verify(plain_password, hashed_password)
-    except Exception:
-        return False

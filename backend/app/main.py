@@ -6,6 +6,7 @@ from app.core.database import MongoManager
 
 # Domain Module Routers
 from app.modules.auth import auth_router
+from app.modules.admin import admin_router
 from app.modules.teachers import teachers_router
 from app.modules.students import students_router
 from app.modules.leaves import leaves_router
@@ -64,6 +65,7 @@ async def health_check():
 
 # ── Mount Domain Module Routers (Bounded Contexts) ──
 app.include_router(auth_router, prefix=settings.API_V1_STR)
+app.include_router(admin_router, prefix=settings.API_V1_STR)
 app.include_router(teachers_router, prefix=settings.API_V1_STR)
 app.include_router(students_router, prefix=settings.API_V1_STR)
 app.include_router(leaves_router, prefix=settings.API_V1_STR)

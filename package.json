@@ -1,0 +1,21 @@
+{
+  "name": "greenfield-school-management-system",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Greenfield International School Management System with Modular Monolith Architecture",
+  "scripts": {
+    "dev": "npm run dev --prefix frontend",
+    "build": "npm run build --prefix frontend",
+    "seed:admin": "cd backend && python -m app.core.seed_admin",
+    "test:backend": "cd backend && pytest -v"
+  },
+  "keywords": [
+    "school-management",
+    "fastapi",
+    "react",
+    "mongodb",
+    "rbac"
+  ],
+  "author": "Greenfield IS Team",
+  "license": "MIT"
+}

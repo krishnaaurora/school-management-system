@@ -1,13 +1,18 @@
 from dataclasses import dataclass, field
-from typing import List, Optional
+from datetime import datetime, timezone
+from typing import Optional
 
 
 @dataclass
-class UserModel:
-    id: str
-    email: str
-    password: str
-    role: str
+class User:
     name: str
-    role_title: str
-    permissions: List[str] = field(default_factory=list)
+    email: str
+    passwordHash: str
+    role: str  # "ADMIN" | "TEACHER" | "STUDENT"
+    status: str = "ACTIVE"  # "ACTIVE" | "INACTIVE"
+    profileId: Optional[str] = None
+    createdBy: Optional[str] = None
+    createdAt: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    updatedAt: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    lastLoginAt: Optional[datetime] = None
+    id: Optional[str] = None
