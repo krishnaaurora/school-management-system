@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, CheckCircle2, LogOut, KeyRound, AlertCircle } from 'lucide-react';
+import { ArrowRight, CheckCircle2, LogOut, KeyRound, AlertCircle, Sparkles, GraduationCap, UserCheck, Shield } from 'lucide-react';
 import GisEmblem from '../../../components/ui/GisEmblem';
 import LoginForm from '../components/LoginForm';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth, DEMO_ACCOUNTS } from '../hooks/useAuth';
 
 export default function LoginPage({ onNavigateHome, onLoginSuccess }) {
   const { user: loggedInUser, loading, login, logout } = useAuth();
@@ -25,6 +25,13 @@ export default function LoginPage({ onNavigateHome, onLoginSuccess }) {
     }
   };
 
+  const handleQuickDemoLaunch = (roleKey) => {
+    const demo = DEMO_ACCOUNTS[roleKey];
+    if (demo) {
+      handleLogin(demo.email, demo.password);
+    }
+  };
+
   return (
     <div className="min-h-screen w-full flex flex-col bg-[#F8F5EF] relative overflow-x-hidden font-sans">
       
@@ -42,14 +49,16 @@ export default function LoginPage({ onNavigateHome, onLoginSuccess }) {
           </div>
         </div>
 
-        {onNavigateHome && (
-          <button
-            onClick={onNavigateHome}
-            className="text-xs font-semibold text-white/85 hover:text-white transition-all px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 cursor-pointer"
-          >
-            School Website &rarr;
-          </button>
-        )}
+        <div className="flex items-center gap-2.5">
+          {onNavigateHome && (
+            <button
+              onClick={onNavigateHome}
+              className="text-xs font-semibold text-white/85 hover:text-white transition-all px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 cursor-pointer"
+            >
+              School Website &rarr;
+            </button>
+          )}
+        </div>
       </header>
 
       {/* ── MAIN SPLIT VIEW LAYOUT ── */}
@@ -62,24 +71,24 @@ export default function LoginPage({ onNavigateHome, onLoginSuccess }) {
             alt="Greenfield International School Campus"
             className="w-full h-full object-cover object-center brightness-95"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-forest-950/75 via-forest-950/45 to-forest-950/70 lg:to-forest-950/50" />
+          <div className="absolute inset-0 bg-gradient-to-r from-forest-950/80 via-forest-950/55 to-forest-950/75 lg:to-forest-950/60" />
         </div>
 
-        {/* LEFT COLUMN: School Mission & Narrative */}
-        <div className="relative z-10 w-full lg:w-3/5 flex flex-col justify-center px-6 sm:px-12 lg:px-16 py-10 lg:py-16 text-ivory">
+        {/* LEFT COLUMN: School Mission & Quick Demo Launch Hub */}
+        <div className="relative z-10 w-full lg:w-3/5 flex flex-col justify-center px-6 sm:px-12 lg:px-16 py-8 lg:py-14 text-ivory">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="max-w-xl"
+            className="max-w-xl space-y-4"
           >
-            <div className="inline-flex items-center gap-2 mb-4">
+            <div className="inline-flex items-center gap-2">
               <span className="text-[11px] sm:text-xs uppercase tracking-[0.28em] font-bold text-gold-300 drop-shadow-sm">
                 DISCIPLINE &bull; KNOWLEDGE &bull; CHARACTER
               </span>
             </div>
 
-            <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-white tracking-tight leading-[1.15] mb-4 drop-shadow-md">
+            <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-white tracking-tight leading-[1.15] drop-shadow-md">
               Nurturing <br />
               <span className="italic text-gold-200">Brighter Tomorrows</span>
             </h1>
@@ -87,6 +96,77 @@ export default function LoginPage({ onNavigateHome, onLoginSuccess }) {
             <p className="text-sm sm:text-base text-ivory/90 leading-relaxed max-w-lg drop-shadow-sm font-normal">
               A safe, inclusive and inspiring environment for holistic learning, intellectual rigor, and personal growth.
             </p>
+
+            {/* ── 1-CLICK DEMO PORTAL SHORTCUTS ── */}
+            <div className="pt-4 border-t border-white/15 max-w-lg">
+              <p className="text-xs font-bold uppercase tracking-wider text-gold-300 flex items-center gap-1.5 mb-2.5">
+                <Sparkles className="w-3.5 h-3.5 text-gold-400" />
+                <span>Instant 1-Click Demo Portal Launch</span>
+              </p>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                {/* 1. Student Portal */}
+                <button
+                  type="button"
+                  onClick={() => handleQuickDemoLaunch('STUDENT')}
+                  className="p-3 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-left transition-all backdrop-blur-md group cursor-pointer"
+                >
+                  <div className="flex items-center justify-between mb-1">
+                    <GraduationCap className="w-4 h-4 text-emerald-300" />
+                    <span className="text-[10px] text-emerald-300 font-bold bg-emerald-950/60 px-1.5 py-0.2 rounded border border-emerald-500/30">
+                      Class 10-A
+                    </span>
+                  </div>
+                  <p className="text-xs font-bold text-white group-hover:text-gold-200">
+                    Student Portal
+                  </p>
+                  <p className="text-[10.5px] text-ivory/70">
+                    Aarav Kumar
+                  </p>
+                </button>
+
+                {/* 2. Teacher Portal (Dr. Rajesh Gupta) */}
+                <button
+                  type="button"
+                  onClick={() => handleQuickDemoLaunch('TEACHER')}
+                  className="p-3 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-left transition-all backdrop-blur-md group cursor-pointer"
+                >
+                  <div className="flex items-center justify-between mb-1">
+                    <UserCheck className="w-4 h-4 text-gold-300" />
+                    <span className="text-[10px] text-gold-300 font-bold bg-amber-950/60 px-1.5 py-0.2 rounded border border-gold-500/30">
+                      Faculty
+                    </span>
+                  </div>
+                  <p className="text-xs font-bold text-white group-hover:text-gold-200">
+                    Teacher Portal
+                  </p>
+                  <p className="text-[10.5px] text-ivory/70">
+                    Dr. Rajesh Gupta
+                  </p>
+                </button>
+
+                {/* 3. Admin Portal */}
+                <button
+                  type="button"
+                  onClick={() => handleQuickDemoLaunch('ADMIN')}
+                  className="p-3 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-left transition-all backdrop-blur-md group cursor-pointer"
+                >
+                  <div className="flex items-center justify-between mb-1">
+                    <Shield className="w-4 h-4 text-amber-300" />
+                    <span className="text-[10px] text-amber-300 font-bold bg-amber-950/60 px-1.5 py-0.2 rounded border border-amber-500/30">
+                      Central
+                    </span>
+                  </div>
+                  <p className="text-xs font-bold text-white group-hover:text-gold-200">
+                    Admin Portal
+                  </p>
+                  <p className="text-[10.5px] text-ivory/70">
+                    Administrator
+                  </p>
+                </button>
+              </div>
+            </div>
+
           </motion.div>
         </div>
 
@@ -96,7 +176,7 @@ export default function LoginPage({ onNavigateHome, onLoginSuccess }) {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="w-full max-w-[350px] sm:max-w-[365px] bg-white rounded-2xl shadow-2xl border border-gray-100 p-5 sm:p-6 relative overflow-hidden"
+            className="w-full max-w-[360px] sm:max-w-[380px] bg-white rounded-2xl shadow-2xl border border-gray-100 p-5 sm:p-6 relative overflow-hidden"
           >
             {errorMessage && (
               <div className="mb-3 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2 animate-in fade-in">

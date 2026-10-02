@@ -16,6 +16,26 @@ export function useTeacherData() {
   const [notifications, setNotifications] = useState(TEACHER_NOTIFICATIONS);
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('gis_user');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (parsed && (parsed.role === 'TEACHER' || parsed.email?.includes('teacher') || parsed.email?.includes('rajesh') || parsed.email?.includes('gisedu'))) {
+          setProfile(prev => ({
+            ...prev,
+            ...parsed,
+            name: parsed.name || prev.name,
+            email: parsed.email || prev.email,
+            department: parsed.department || prev.department,
+            role: parsed.role_title || parsed.role || prev.role,
+            id: parsed.id || parsed.profileId || prev.id,
+          }));
+        }
+      }
+    } catch {}
+  }, []);
+
   // Submit leave request and automatically compute affected periods
   const submitLeaveRequest = async (leaveForm) => {
     // Generate affected classes from timetable

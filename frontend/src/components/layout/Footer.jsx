@@ -128,9 +128,9 @@ export default function Footer({ onOpenAdmissions, onOpenAssistant }) {
                 </a>
               </li>
               <li>
-                <button onClick={onOpenAssistant} className="hover:text-ivory text-left transition-colors font-medium text-gold-300 cursor-pointer">
-                  School Assistant 24/7
-                </button>
+                <a href="#contact" onClick={(e) => handleLinkClick(e, '#contact')} className="hover:text-ivory transition-colors">
+                  Admissions Office & Inquiries
+                </a>
               </li>
               <li>
                 <a href="#contact" onClick={(e) => handleLinkClick(e, '#contact')} className="hover:text-ivory transition-colors">

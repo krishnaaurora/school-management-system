@@ -3,15 +3,66 @@ import { authApi } from '../api';
 import ApiClient from '../../../services/apiClient';
 
 // Permanent Institutional Credentials & Role Profiles
+export const DEMO_ACCOUNTS = {
+  ADMIN: {
+    label: 'System Admin',
+    email: 'admingis@gmail.com',
+    password: 'GIS@admin123',
+    role: 'ADMIN',
+    name: 'Admin GIS Desk',
+    badge: 'Central Office'
+  },
+  TEACHER: {
+    label: 'Teacher Portal (Dr. Rajesh Gupta)',
+    email: 'rajesh.gupta@gisedu.in',
+    password: 'RajeshGuptgis2026',
+    role: 'TEACHER',
+    name: 'Dr. Rajesh Gupta',
+    badge: 'HOD Science'
+  },
+  STUDENT: {
+    label: 'Student Portal (Aarav Kumar)',
+    email: 'student.aarav@greenfieldis.edu',
+    password: 'AaravKuma2026',
+    role: 'STUDENT',
+    name: 'Aarav Kumar (10-A)',
+    badge: 'Class 10-A'
+  }
+};
+
 const PERMANENT_ACCOUNTS = {
   'admingis@gmail.com': {
     id: 'GIS-ADM-001',
     name: 'Admin GIS Desk',
-    email: 'Admingis@gmail.com',
+    email: 'admingis@gmail.com',
     role: 'ADMIN',
     role_title: 'System Administrator',
     status: 'ACTIVE',
     validPasswords: ['GIS@admin123', 'admin123', 'GIS@admin'],
+  },
+  'rajesh.gupta@gisedu.in': {
+    id: 'GIS-T-2026-089',
+    name: 'Dr. Rajesh Gupta',
+    email: 'rajesh.gupta@gisedu.in',
+    role: 'TEACHER',
+    role_title: 'Head of Department (Science & Chemistry)',
+    department: 'Department of Science & Chemistry',
+    subjects: ['Chemistry', 'Organic Chemistry', 'Biochemistry'],
+    assignedClasses: ['10-A', '11-A', '12-A'],
+    experience: '12 Years (Former Senior Chemistry Lead)',
+    qualification: 'Ph.D. in Organic Chemistry (IISc Bangalore), M.Sc. (Gold Medalist), B.Ed.',
+    joiningYear: '2026',
+    officeRoom: 'Senior Secondary Science Wing A, Desk 04',
+    profileId: 'GIS-T-2026-089',
+    status: 'ACTIVE',
+    validPasswords: [
+      'RajeshGuptgis2026',
+      'rajeshguptgis2026',
+      'RajeshGupt2026',
+      'GIS@teacher123',
+      'teacher123',
+      'GIS@admin123',
+    ],
   },
   'teacher.ananya@greenfieldis.edu': {
     id: 'GIS-T-023',
@@ -19,9 +70,12 @@ const PERMANENT_ACCOUNTS = {
     email: 'teacher.ananya@greenfieldis.edu',
     role: 'TEACHER',
     role_title: 'Mathematics Faculty',
+    department: 'Department of Mathematics & STEM',
+    subjects: ['Mathematics', 'Advanced Calculus'],
+    assignedClasses: ['8-A', '9-B', '10-A'],
     profileId: 'GIS-T-023',
     status: 'ACTIVE',
-    validPasswords: ['GIS@teacher123', 'teacher123', 'GIS@admin123'],
+    validPasswords: ['GIS@teacher123', 'teacher123', 'AnanyaShar2024', 'AnanyaShargis2024', 'GIS@admin123'],
   },
   'student.aarav@greenfieldis.edu': {
     id: 'GIS-STU-10A-024',
@@ -29,9 +83,23 @@ const PERMANENT_ACCOUNTS = {
     email: 'student.aarav@greenfieldis.edu',
     role: 'STUDENT',
     role_title: 'Class 10-A Student',
+    grade: '10-A',
+    rollNo: '10A-01',
     profileId: 'GIS-STU-10A-024',
     status: 'ACTIVE',
-    validPasswords: ['GIS@student123', 'student123', 'GIS@admin123'],
+    validPasswords: ['AaravKuma2026', 'AaravKumagis2026', 'aaravkuma2026', 'GIS@student123', 'student123', 'GIS@admin123'],
+  },
+  'aarav.kumar@gisedu.in': {
+    id: 'GIS-STU-10A-024',
+    name: 'Aarav Kumar',
+    email: 'aarav.kumar@gisedu.in',
+    role: 'STUDENT',
+    role_title: 'Class 10-A Student',
+    grade: '10-A',
+    rollNo: '10A-01',
+    profileId: 'GIS-STU-10A-024',
+    status: 'ACTIVE',
+    validPasswords: ['AaravKuma2026', 'AaravKumagis2026', 'aaravkuma2026', 'GIS@student123', 'student123', 'GIS@admin123'],
   },
 };
 

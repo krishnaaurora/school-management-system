@@ -1,4 +1,25 @@
 export const TEACHER_PROFILE_DATA = {
+  id: "GIS-T-2026-089",
+  name: "Dr. Rajesh Gupta",
+  salutation: "Dr.",
+  email: "rajesh.gupta@gisedu.in",
+  subject: "Chemistry & STEM",
+  department: "Department of Science & Chemistry",
+  role: "Head of Department (Science & Chemistry)",
+  workingHours: "8:00 AM – 3:30 PM",
+  experience: "12 Years (Former Senior Chemistry Lead)",
+  qualification: "Ph.D. in Organic Chemistry (IISc Bangalore), M.Sc. (Gold Medalist), B.Ed.",
+  joiningYear: "2026",
+  officeRoom: "Senior Secondary Science Wing A, Desk 04",
+  assignedClasses: [
+    { id: "10-A", name: "Grade 10-A", subject: "Chemistry", studentsCount: 32, attendanceAvg: "96%", room: "301", todayPeriod: "Period 3 (10:15–11:00)" },
+    { id: "11-A", name: "Grade 11-A", subject: "Organic Chemistry", studentsCount: 28, attendanceAvg: "94%", room: "Chem Lab 1", todayPeriod: "Period 1 (8:30–9:15)" },
+    { id: "12-A", name: "Grade 12-A", subject: "Advanced Biochemistry", studentsCount: 26, attendanceAvg: "98%", room: "Chem Lab 2", todayPeriod: "Period 2 (9:15–10:00)" },
+    { id: "9-B", name: "Grade 9-B", subject: "General Science", studentsCount: 30, attendanceAvg: "92%", room: "204", todayPeriod: "Period 5 (12:00–12:45)" },
+  ],
+};
+
+export const ANANYA_SHARMA_PROFILE = {
   id: "GIS-T-023",
   name: "Ananya Sharma",
   salutation: "Mrs.",
@@ -9,6 +30,8 @@ export const TEACHER_PROFILE_DATA = {
   workingHours: "8:00 AM – 4:00 PM",
   experience: "8 Years",
   qualification: "M.Sc. Applied Mathematics, B.Ed (Gold Medalist)",
+  joiningYear: "2024",
+  officeRoom: "Senior Secondary Faculty Wing B, Desk 14",
   assignedClasses: [
     { id: "10-A", name: "Grade 10-A", subject: "Mathematics", studentsCount: 32, attendanceAvg: "94%", room: "301", todayPeriod: "Period 3 (10:15–11:00)" },
     { id: "9-B", name: "Grade 9-B", subject: "Mathematics", studentsCount: 30, attendanceAvg: "91%", room: "204", todayPeriod: "Period 2 (9:15–10:00)" },
@@ -18,12 +41,12 @@ export const TEACHER_PROFILE_DATA = {
 };
 
 export const TEACHER_TODAY_TIMETABLE = [
-  { period: 1, time: "8:30–9:15", classId: "8-A", subject: "Mathematics", room: "201", status: "Completed", isFree: false, topic: "Quadratic Equations Intro" },
-  { period: 2, time: "9:15–10:00", classId: "9-B", subject: "Mathematics", room: "204", status: "Completed", isFree: false, topic: "Linear Equations in Two Variables" },
-  { period: 3, time: "10:15–11:00", classId: "10-A", subject: "Mathematics", room: "301", status: "Next Up", isFree: false, topic: "Trigonometric Identities Workshop" },
-  { period: 4, time: "11:00–11:45", classId: "Free", subject: "—", room: "Staff Lounge", status: "Free Period", isFree: true, topic: "Department Lesson Planning" },
-  { period: 5, time: "12:00–12:45", classId: "9-A", subject: "Mathematics", room: "202", status: "Upcoming", isFree: false, topic: "Coordinate Geometry Problem Solving" },
-  { period: 6, time: "1:30–2:15", classId: "10-A", subject: "Math Lab", room: "STEM Lab B", status: "Upcoming", isFree: false, topic: "Statistical Plotting with Python" },
+  { period: 1, time: "8:30–9:15", classId: "11-A", subject: "Organic Chemistry", room: "Chem Lab 1", status: "Completed", isFree: false, topic: "Electrophilic Aromatic Substitution & Benzene Mechanisms" },
+  { period: 2, time: "9:15–10:00", classId: "12-A", subject: "Biochemistry", room: "Chem Lab 2", status: "Completed", isFree: false, topic: "Peptide Bond Formation & Protein Tertiary Structure" },
+  { period: 3, time: "10:15–11:00", classId: "10-A", subject: "Chemistry", room: "301", status: "Next Up", isFree: false, topic: "Chemical Reactions & Redox Titrations" },
+  { period: 4, time: "11:00–11:45", classId: "Free", subject: "—", room: "Faculty Lounge", status: "Free Period", isFree: true, topic: "CBSE Practicals Lab Preparation" },
+  { period: 5, time: "12:00–12:45", classId: "9-B", subject: "General Science", room: "204", status: "Upcoming", isFree: false, topic: "Atomic Structure & Periodic Table Trends" },
+  { period: 6, time: "1:30–2:15", classId: "10-A", subject: "Science Lab", room: "Science Wing Lab", status: "Upcoming", isFree: false, topic: "Salt Analysis & Flame Tests Practical" },
 ];
 
 export const CLASS_STUDENTS_ROSTER = {

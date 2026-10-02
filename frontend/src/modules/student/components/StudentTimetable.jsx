@@ -6,282 +6,505 @@ import {
   UserCheck, 
   Sparkles, 
   CheckCircle2, 
-  Info,
-  ChevronRight,
-  User,
-  ShieldCheck,
-  Filter
+  Info, 
+  ChevronRight, 
+  User, 
+  ShieldCheck, 
+  Printer, 
+  BookOpen, 
+  Layers,
+  X
 } from 'lucide-react';
 
-export default function StudentTimetable({ timetable = {}, selectedDay = 'Mon', onSelectDay }) {
+export default function StudentTimetable({ 
+  timetable = {}, 
+  selectedDay = 'Mon', 
+  onSelectDay 
+}) {
   const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
   const [activeDay, setActiveDay] = useState(selectedDay || 'Mon');
-  const [selectedClassModal, setSelectedClassModal] = useState(null);
+  const [viewMode, setViewMode] = useState('weekly'); // 'weekly' | 'daily'
+  const [selectedSlot, setSelectedSlot] = useState(null);
 
-  const periods = timetable.periods || [
-    { period: 1, time: '8:30 – 9:15 AM' },
-    { period: 2, time: '9:15 – 10:00 AM' },
-    { period: 3, time: '10:15 – 11:00 AM' },
-    { period: 4, time: '11:00 – 11:45 AM' },
-    { period: 5, time: '12:00 – 12:45 PM' },
+  // Official Class 10-A Master Weekly Timetable Grid
+  const MASTER_PERIODS = [
+    { period: 0, time: '8:00 – 8:30 AM', label: 'Morning Assembly & Homeroom', type: 'break' },
+    { period: 1, time: '8:30 – 9:15 AM', label: 'Period 1', type: 'class' },
+    { period: 2, time: '9:15 – 10:00 AM', label: 'Period 2', type: 'class' },
+    { period: 'recess', time: '10:00 – 10:15 AM', label: 'Fruit Break & Recess', type: 'break' },
+    { period: 3, time: '10:15 – 11:00 AM', label: 'Period 3', type: 'class' },
+    { period: 4, time: '11:00 – 11:45 AM', label: 'Period 4', type: 'class' },
+    { period: 'lunch', time: '11:45 AM – 12:30 PM', label: 'Dining Hall Lunch Interval', type: 'break' },
+    { period: 5, time: '12:30 – 1:15 PM', label: 'Period 5', type: 'class' },
+    { period: 6, time: '1:15 – 2:00 PM', label: 'Period 6', type: 'class' },
+    { period: 7, time: '2:00 – 2:45 PM', label: 'Period 7 / Co-Curricular', type: 'class' },
   ];
 
-  const schedule = timetable.schedule || {};
+  const WEEKLY_SCHEDULE_GRID = {
+    Mon: [
+      { period: 1, subject: 'Mathematics', teacher: 'Mrs. Ananya Sharma', room: 'Room 301', topic: 'Quadratic Equations & Parabolic Roots', color: 'emerald' },
+      { period: 2, subject: 'Physics', teacher: 'Mr. Amitav Sen', room: 'Physics Lab', topic: 'Light Reflection & Spherical Mirrors', color: 'blue' },
+      { period: 3, subject: 'Science (Chemistry)', teacher: 'Dr. Rajesh Gupta', room: 'Chem Lab 1', topic: 'Redox Titrations & Chemical Reactions', color: 'teal', isSubstitute: false },
+      { period: 4, subject: 'English Core', teacher: 'Mrs. Sunita Rao', room: 'Room 301', topic: 'Analytical Paragraph Drafting & Prose', color: 'amber' },
+      { period: 5, subject: 'Social Science (History)', teacher: 'Mr. Vikram Singh', room: 'Room 301', topic: 'The Rise of Nationalism in Europe', color: 'purple' },
+      { period: 6, subject: 'Computer Science & AI', teacher: 'Mr. Tanmay Joshi', room: 'STEM Lab B', topic: 'Python Loops & Data Structures', color: 'indigo' },
+      { period: 7, subject: 'Physical Education / Sports', teacher: 'Coach Sandeep', room: 'Main Field', topic: 'Athletics & Team Football Drills', color: 'orange' },
+    ],
+    Tue: [
+      { period: 1, subject: 'Science (Chemistry)', teacher: 'Dr. Rajesh Gupta', room: 'Chem Lab 1', topic: 'Periodic Classification & Valency Trends', color: 'teal' },
+      { period: 2, subject: 'Mathematics', teacher: 'Mrs. Ananya Sharma', room: 'Room 301', topic: 'Trigonometric Ratios & Identities', color: 'emerald' },
+      { period: 3, subject: 'English Core', teacher: 'Mrs. Sunita Rao', room: 'Room 301', topic: 'Poetry Appreciation & Literary Devices', color: 'amber' },
+      { period: 4, subject: 'Physics', teacher: 'Mr. Amitav Sen', room: 'Physics Lab', topic: 'Ohm’s Law & Resistance in Circuits', color: 'blue' },
+      { period: 5, subject: 'Social Science (Geography)', teacher: 'Mr. Vikram Singh', room: 'Room 301', topic: 'Water Resources & Multipurpose Projects', color: 'purple' },
+      { period: 6, subject: 'Mathematics Lab', teacher: 'Mrs. Ananya Sharma', room: 'STEM Lab B', topic: 'GeoGebra Coordinate Geometry', color: 'emerald' },
+      { period: 7, subject: 'Library & Guided Reading', teacher: 'Mrs. Meenakshi', room: 'Central Library', topic: 'Scholastic Book Reviews & Research', color: 'stone' },
+    ],
+    Wed: [
+      { period: 1, subject: 'Social Science (Civics)', teacher: 'Mr. Vikram Singh', room: 'Room 301', topic: 'Federalism & Decentralization in India', color: 'purple' },
+      { period: 2, subject: 'Mathematics', teacher: 'Mrs. Ananya Sharma', room: 'Room 301', topic: 'Arithmetic Progressions & Sum of N Terms', color: 'emerald' },
+      { period: 3, subject: 'Biology & Life Processes', teacher: 'Dr. Rajesh Gupta', room: 'Bio Lab', topic: 'Human Circulatory System & Respiration', color: 'teal' },
+      { period: 4, subject: 'English Core', teacher: 'Mrs. Sunita Rao', room: 'Room 301', topic: 'Letter to Editor & Debate Preparation', color: 'amber' },
+      { period: 5, subject: 'Computer Science & AI', teacher: 'Mr. Tanmay Joshi', room: 'STEM Lab B', topic: 'Machine Learning Classification Models', color: 'indigo' },
+      { period: 6, subject: 'Physics Lab', teacher: 'Mr. Amitav Sen', room: 'Physics Lab', topic: 'Focal Length of Concave Mirror Verification', color: 'blue' },
+      { period: 7, subject: 'Music / Visual Arts', teacher: 'Mrs. Kavita Verma', room: 'Arts Studio', topic: 'Hindustani Classical & Acrylic Painting', color: 'rose' },
+    ],
+    Thu: [
+      { period: 1, subject: 'Mathematics', teacher: 'Mrs. Ananya Sharma', room: 'Room 301', topic: 'Triangles: Similarity & Pythagoras Proof', color: 'emerald' },
+      { period: 2, subject: 'Science (Chemistry)', teacher: 'Dr. Rajesh Gupta', room: 'Chem Lab 1', topic: 'Acids, Bases & Salts: pH Indicator Lab', color: 'teal' },
+      { period: 3, subject: 'English Core', teacher: 'Mrs. Sunita Rao', room: 'Room 301', topic: 'Grammar: Modals & Reported Speech', color: 'amber' },
+      { period: 4, subject: 'Social Science (Economics)', teacher: 'Mr. Vikram Singh', room: 'Room 301', topic: 'Sectors of the Indian Economy', color: 'purple' },
+      { period: 5, subject: 'Physics', teacher: 'Mr. Amitav Sen', room: 'Room 301', topic: 'Magnetic Effects of Electric Current', color: 'blue' },
+      { period: 6, subject: 'Robotics & STEM Lab', teacher: 'Mr. Tanmay Joshi', room: 'Robotics Wing', topic: 'Arduino Microcontroller Sensor Interfacing', color: 'indigo' },
+      { period: 7, subject: 'Physical Education', teacher: 'Coach Sandeep', room: 'Indoor Court', topic: 'Badminton & Table Tennis League', color: 'orange' },
+    ],
+    Fri: [
+      { period: 1, subject: 'Physics & STEM', teacher: 'Mr. Amitav Sen', room: 'Physics Lab', topic: 'Electromagnetism & DC Motors', color: 'blue' },
+      { period: 2, subject: 'Science (Chemistry)', teacher: 'Dr. Rajesh Gupta', room: 'Chem Lab 1', topic: 'Metals & Non-Metals: Reactivity Series', color: 'teal' },
+      { period: 3, subject: 'Mathematics', teacher: 'Mrs. Ananya Sharma', room: 'Room 301', topic: 'Coordinate Geometry: Distance & Section Formula', color: 'emerald' },
+      { period: 4, subject: 'Social Science', teacher: 'Mr. Vikram Singh', room: 'Room 301', topic: 'Globalization & World Economy', color: 'purple' },
+      { period: 5, subject: 'English Core', teacher: 'Mrs. Sunita Rao', room: 'Room 301', topic: 'Reading Comprehension & Case-Based Passages', color: 'amber' },
+      { period: 6, subject: 'Computer Science & AI', teacher: 'Mr. Tanmay Joshi', room: 'STEM Lab B', topic: 'AI Ethics & Neural Networks Overview', color: 'indigo' },
+      { period: 7, subject: 'Clubs & Leadership Forum', teacher: 'Mrs. Ananya Sharma', room: 'Auditorium', topic: 'Model UN & Youth Parliament Session', color: 'amber' },
+    ],
+  };
+
+  const getDayFullName = (d) => {
+    switch (d) {
+      case 'Mon': return 'Monday';
+      case 'Tue': return 'Tuesday';
+      case 'Wed': return 'Wednesday';
+      case 'Thu': return 'Thursday';
+      case 'Fri': return 'Friday';
+      default: return d;
+    }
+  };
+
+  const getColorStyles = (color) => {
+    switch (color) {
+      case 'emerald':
+        return 'bg-emerald-50 text-emerald-950 border-emerald-200 hover:border-emerald-400';
+      case 'teal':
+        return 'bg-teal-50 text-teal-950 border-teal-200 hover:border-teal-400';
+      case 'blue':
+        return 'bg-blue-50 text-blue-950 border-blue-200 hover:border-blue-400';
+      case 'amber':
+        return 'bg-amber-50 text-amber-950 border-amber-200 hover:border-amber-400';
+      case 'purple':
+        return 'bg-purple-50 text-purple-950 border-purple-200 hover:border-purple-400';
+      case 'indigo':
+        return 'bg-indigo-50 text-indigo-950 border-indigo-200 hover:border-indigo-400';
+      case 'rose':
+        return 'bg-rose-50 text-rose-950 border-rose-200 hover:border-rose-400';
+      case 'orange':
+        return 'bg-orange-50 text-orange-950 border-orange-200 hover:border-orange-400';
+      default:
+        return 'bg-gray-50 text-gray-900 border-gray-200 hover:border-gray-400';
+    }
+  };
 
   return (
     <div className="space-y-6">
-      {/* Header Info */}
-      <div className="bg-slate-900/60 backdrop-blur-md border border-slate-800 rounded-2xl p-6 relative overflow-hidden shadow-xl">
-        <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative z-10">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <Calendar className="w-6 h-6 text-emerald-400" />
-              <h2 className="text-xl font-bold text-white tracking-tight">Class 10-A Timetable</h2>
-            </div>
-            <p className="text-xs sm:text-sm text-slate-400">
-              Weekly schedule with real-time room shifts and AI-dispatched substitute faculty updates.
-            </p>
+      
+      {/* ── TOP BANNER & METADATA ── */}
+      <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-2xs relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-forest-50 text-forest-900 border border-forest-800/15 text-xs font-bold mb-2">
+            <Calendar className="w-3.5 h-3.5 text-gold-600" />
+            <span>Class 10-A Academic Schedule &bull; Term 1 (AY 2026–27)</span>
+          </div>
+          <h2 className="font-serif text-2xl font-bold text-forest-900">
+            Class 10-A Master Timetable
+          </h2>
+          <p className="text-xs text-gray-500 mt-0.5">
+            Classroom 301 &bull; Class Mentor: <strong className="text-forest-900 font-semibold">Mrs. Ananya Sharma</strong> &bull; 7 Periods Daily
+          </p>
+        </div>
+
+        {/* Action Controls */}
+        <div className="flex items-center gap-2.5 shrink-0">
+          <div className="bg-[#FAF8F3] p-1 rounded-xl border border-[#C5A880]/30 flex items-center">
+            <button
+              type="button"
+              onClick={() => setViewMode('weekly')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                viewMode === 'weekly'
+                  ? 'bg-forest-900 text-white shadow-2xs'
+                  : 'text-gray-600 hover:text-forest-900'
+              }`}
+            >
+              Weekly Matrix
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode('daily')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                viewMode === 'daily'
+                  ? 'bg-forest-900 text-white shadow-2xs'
+                  : 'text-gray-600 hover:text-forest-900'
+              }`}
+            >
+              Day View
+            </button>
           </div>
 
-          {/* Substitute Notice Tag */}
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs font-semibold">
-            <Sparkles className="w-4 h-4 text-amber-400" />
-            <span>AI Proxy Sync Active</span>
-          </div>
+          <button
+            type="button"
+            onClick={() => window.print()}
+            className="px-3.5 py-2 rounded-xl bg-[#FAF8F3] hover:bg-[#F2EFE8] border border-[#C5A880]/40 text-forest-900 text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
+            title="Print Official Timetable"
+          >
+            <Printer className="w-3.5 h-3.5 text-gold-600" />
+            <span className="hidden sm:inline">Print Matrix</span>
+          </button>
         </div>
       </div>
 
-      {/* Day Selector (Tabs for mobile & fast navigation) */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
-        {days.map((day) => {
-          const isToday = day === 'Mon';
-          const isSelected = activeDay === day;
+      {/* ── DAY SELECTOR TABS ── */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-1">
+        {days.map((d) => {
+          const isSelected = activeDay === d;
           return (
             <button
-              key={day}
+              key={d}
+              type="button"
               onClick={() => {
-                setActiveDay(day);
-                onSelectDay?.(day);
+                setActiveDay(d);
+                onSelectDay?.(d);
               }}
-              className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shrink-0 cursor-pointer ${
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
                 isSelected
-                  ? 'bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/20'
-                  : 'bg-slate-900/70 text-slate-400 hover:text-white hover:bg-slate-800 border border-slate-800'
+                  ? 'bg-[#0D3B2E] text-white shadow-xs'
+                  : 'bg-white text-charcoal-700 hover:bg-gray-50 border border-gray-200'
               }`}
             >
-              <span>{day === 'Mon' ? 'Monday' : day === 'Tue' ? 'Tuesday' : day === 'Wed' ? 'Wednesday' : day === 'Thu' ? 'Thursday' : 'Friday'}</span>
-              {isToday && (
-                <span className={`text-[10px] px-1.5 py-0.2 rounded font-black ${
-                  isSelected ? 'bg-slate-950 text-emerald-400' : 'bg-emerald-500/20 text-emerald-300'
-                }`}>
-                  Today
-                </span>
-              )}
+              {getDayFullName(d)} {d === 'Mon' && '• Today'}
             </button>
           );
         })}
       </div>
 
-      {/* Daily Breakdown for Selected Day */}
-      <div className="bg-slate-900/60 backdrop-blur-md border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
-        <div className="p-4 sm:p-6 border-b border-slate-800 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <h3 className="text-sm font-bold uppercase tracking-wider text-white">
-              {activeDay === 'Mon' ? 'Monday' : activeDay === 'Tue' ? 'Tuesday' : activeDay === 'Wed' ? 'Wednesday' : activeDay === 'Thu' ? 'Thursday' : 'Friday'} Schedule
-            </h3>
-            <span className="text-xs text-slate-400 font-medium">({(schedule[activeDay] || []).length} Periods)</span>
+      {/* ── VIEW MODE 1: COMPLETE WEEKLY MATRIX TABLE ── */}
+      {viewMode === 'weekly' && (
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-2xs overflow-hidden">
+          
+          <div className="p-4 bg-gray-50/80 border-b border-gray-200 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Clock className="w-4 h-4 text-gold-600" />
+              <h3 className="font-serif text-sm font-bold text-forest-900">
+                Weekly Timetable Matrix &mdash; Grade 10-A
+              </h3>
+            </div>
+            <span className="text-[11px] text-gray-500 font-mono">
+              8:00 AM &ndash; 2:45 PM
+            </span>
           </div>
-          <span className="text-xs text-slate-400 hidden sm:inline-block">Click any period for detailed session notes</span>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr className="bg-forest-900 text-white uppercase text-[10.5px] tracking-wider">
+                  <th className="py-3 px-3.5 font-bold border-r border-forest-800 w-32">
+                    Period & Time
+                  </th>
+                  {days.map((d) => (
+                    <th 
+                      key={d} 
+                      className={`py-3 px-3.5 font-bold border-r border-forest-800 last:border-none text-center ${
+                        activeDay === d ? 'bg-forest-800 text-gold-300' : ''
+                      }`}
+                    >
+                      {getDayFullName(d)}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200 font-sans">
+                
+                {/* Morning Assembly */}
+                <tr className="bg-amber-50/40 text-amber-950 font-medium">
+                  <td className="py-2.5 px-3.5 font-mono text-[11px] font-bold text-gray-700 border-r border-gray-200">
+                    8:00 – 8:30 AM
+                  </td>
+                  <td colSpan={5} className="py-2.5 px-3.5 text-center text-xs font-semibold text-amber-900">
+                    ✨ Morning Assembly & Homeroom Attendance (Classroom 301)
+                  </td>
+                </tr>
+
+                {/* Periods 1 & 2 */}
+                {[1, 2].map((pNum) => {
+                  const pMeta = MASTER_PERIODS.find((m) => m.period === pNum);
+                  return (
+                    <tr key={pNum} className="hover:bg-gray-50/40 transition-colors">
+                      <td className="py-3 px-3.5 font-bold text-forest-900 border-r border-gray-200 bg-[#FAF8F3]/60">
+                        <span className="block font-serif text-xs">Period {pNum}</span>
+                        <span className="font-mono text-[10.5px] font-normal text-gray-500">{pMeta?.time}</span>
+                      </td>
+                      {days.map((d) => {
+                        const slot = WEEKLY_SCHEDULE_GRID[d]?.find((s) => s.period === pNum);
+                        return (
+                          <td 
+                            key={d} 
+                            onClick={() => slot && setSelectedSlot({ ...slot, day: d, time: pMeta?.time })}
+                            className={`py-2 px-2.5 border-r border-gray-200 last:border-none align-top cursor-pointer transition-colors ${
+                              activeDay === d ? 'bg-forest-50/30' : ''
+                            }`}
+                          >
+                            {slot ? (
+                              <div className={`p-2.5 rounded-xl border transition-all hover:shadow-2xs ${getColorStyles(slot.color)}`}>
+                                <p className="font-bold text-[11.5px] leading-tight">{slot.subject}</p>
+                                <p className="text-[10.5px] text-gray-600 mt-0.5">{slot.teacher}</p>
+                                <p className="text-[9.5px] font-mono text-gray-500 mt-1 flex items-center gap-1">
+                                  <MapPin className="w-3 h-3 text-gold-600" />
+                                  {slot.room}
+                                </p>
+                              </div>
+                            ) : (
+                              <span className="text-gray-300 text-center block">—</span>
+                            )}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  );
+                })}
+
+                {/* Recess Break */}
+                <tr className="bg-emerald-50/40 text-emerald-950 font-medium">
+                  <td className="py-2.5 px-3.5 font-mono text-[11px] font-bold text-gray-700 border-r border-gray-200">
+                    10:00 – 10:15 AM
+                  </td>
+                  <td colSpan={5} className="py-2.5 px-3.5 text-center text-xs font-semibold text-emerald-900">
+                    🍎 Fruit & Recess Interval
+                  </td>
+                </tr>
+
+                {/* Periods 3 & 4 */}
+                {[3, 4].map((pNum) => {
+                  const pMeta = MASTER_PERIODS.find((m) => m.period === pNum);
+                  return (
+                    <tr key={pNum} className="hover:bg-gray-50/40 transition-colors">
+                      <td className="py-3 px-3.5 font-bold text-forest-900 border-r border-gray-200 bg-[#FAF8F3]/60">
+                        <span className="block font-serif text-xs">Period {pNum}</span>
+                        <span className="font-mono text-[10.5px] font-normal text-gray-500">{pMeta?.time}</span>
+                      </td>
+                      {days.map((d) => {
+                        const slot = WEEKLY_SCHEDULE_GRID[d]?.find((s) => s.period === pNum);
+                        return (
+                          <td 
+                            key={d} 
+                            onClick={() => slot && setSelectedSlot({ ...slot, day: d, time: pMeta?.time })}
+                            className={`py-2 px-2.5 border-r border-gray-200 last:border-none align-top cursor-pointer transition-colors ${
+                              activeDay === d ? 'bg-forest-50/30' : ''
+                            }`}
+                          >
+                            {slot ? (
+                              <div className={`p-2.5 rounded-xl border transition-all hover:shadow-2xs ${getColorStyles(slot.color)}`}>
+                                <p className="font-bold text-[11.5px] leading-tight">{slot.subject}</p>
+                                <p className="text-[10.5px] text-gray-600 mt-0.5">{slot.teacher}</p>
+                                <p className="text-[9.5px] font-mono text-gray-500 mt-1 flex items-center gap-1">
+                                  <MapPin className="w-3 h-3 text-gold-600" />
+                                  {slot.room}
+                                </p>
+                              </div>
+                            ) : (
+                              <span className="text-gray-300 text-center block">—</span>
+                            )}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  );
+                })}
+
+                {/* Lunch Interval */}
+                <tr className="bg-amber-50/50 text-amber-950 font-medium">
+                  <td className="py-2.5 px-3.5 font-mono text-[11px] font-bold text-gray-700 border-r border-gray-200">
+                    11:45 AM – 12:30 PM
+                  </td>
+                  <td colSpan={5} className="py-2.5 px-3.5 text-center text-xs font-semibold text-amber-900">
+                    🍽️ Dining Hall Lunch Break
+                  </td>
+                </tr>
+
+                {/* Periods 5, 6, 7 */}
+                {[5, 6, 7].map((pNum) => {
+                  const pMeta = MASTER_PERIODS.find((m) => m.period === pNum);
+                  return (
+                    <tr key={pNum} className="hover:bg-gray-50/40 transition-colors">
+                      <td className="py-3 px-3.5 font-bold text-forest-900 border-r border-gray-200 bg-[#FAF8F3]/60">
+                        <span className="block font-serif text-xs">Period {pNum}</span>
+                        <span className="font-mono text-[10.5px] font-normal text-gray-500">{pMeta?.time}</span>
+                      </td>
+                      {days.map((d) => {
+                        const slot = WEEKLY_SCHEDULE_GRID[d]?.find((s) => s.period === pNum);
+                        return (
+                          <td 
+                            key={d} 
+                            onClick={() => slot && setSelectedSlot({ ...slot, day: d, time: pMeta?.time })}
+                            className={`py-2 px-2.5 border-r border-gray-200 last:border-none align-top cursor-pointer transition-colors ${
+                              activeDay === d ? 'bg-forest-50/30' : ''
+                            }`}
+                          >
+                            {slot ? (
+                              <div className={`p-2.5 rounded-xl border transition-all hover:shadow-2xs ${getColorStyles(slot.color)}`}>
+                                <p className="font-bold text-[11.5px] leading-tight">{slot.subject}</p>
+                                <p className="text-[10.5px] text-gray-600 mt-0.5">{slot.teacher}</p>
+                                <p className="text-[9.5px] font-mono text-gray-500 mt-1 flex items-center gap-1">
+                                  <MapPin className="w-3 h-3 text-gold-600" />
+                                  {slot.room}
+                                </p>
+                              </div>
+                            ) : (
+                              <span className="text-gray-300 text-center block">—</span>
+                            )}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  );
+                })}
+
+              </tbody>
+            </table>
+          </div>
+
         </div>
+      )}
 
-        <div className="divide-y divide-slate-800/60">
-          {(schedule[activeDay] || []).map((item, idx) => {
-            const periodTime = periods.find(p => p.period === item.period)?.time || 'Period ' + item.period;
-            const isSub = item.isSubstitute;
+      {/* ── VIEW MODE 2: FOCUSED DAILY LIST VIEW ── */}
+      {viewMode === 'daily' && (
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-2xs overflow-hidden">
+          <div className="p-4 sm:p-5 bg-gray-50/80 border-b border-gray-200 flex items-center justify-between">
+            <h3 className="font-serif text-sm font-bold text-forest-900">
+              {getDayFullName(activeDay)}'s Daily Routine & Class Schedule
+            </h3>
+            <span className="text-xs text-gray-500 font-semibold">
+              7 Scheduled Periods &bull; 2 Breaks
+            </span>
+          </div>
 
-            return (
-              <div
-                key={idx}
-                onClick={() => setSelectedClassModal(item)}
-                className={`p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-all cursor-pointer hover:bg-slate-800/40 ${
-                  isSub ? 'bg-emerald-950/10 border-l-4 border-emerald-500' : ''
-                }`}
-              >
-                {/* Period & Subject */}
-                <div className="flex items-start sm:items-center gap-4">
-                  <div className={`w-12 h-12 rounded-xl flex flex-col items-center justify-center font-bold shrink-0 border ${
-                    isSub 
-                      ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' 
-                      : 'bg-slate-800 text-white border-slate-700'
-                  }`}>
-                    <span className="text-[10px] uppercase text-slate-400">P{item.period}</span>
-                    <span className="text-xs font-mono">{periodTime.split('–')[0]?.trim()}</span>
-                  </div>
-
-                  <div>
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <h4 className="text-base font-bold text-white">{item.subject}</h4>
-                      {isSub && (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                          <Sparkles className="w-3 h-3 text-amber-400" />
-                          Substitute Assigned
-                        </span>
-                      )}
+          <div className="divide-y divide-gray-100">
+            {(WEEKLY_SCHEDULE_GRID[activeDay] || []).map((item, idx) => {
+              const pMeta = MASTER_PERIODS.find((m) => m.period === item.period);
+              return (
+                <div 
+                  key={idx}
+                  onClick={() => setSelectedSlot({ ...item, day: activeDay, time: pMeta?.time })}
+                  className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-gray-50/80 transition-colors cursor-pointer"
+                >
+                  <div className="flex items-center gap-3.5">
+                    <div className="w-12 h-12 rounded-xl bg-forest-50 text-forest-900 border border-forest-800/15 flex flex-col items-center justify-center font-bold shrink-0">
+                      <span className="text-[10px] uppercase text-gray-400">P{item.period}</span>
+                      <span className="font-serif text-sm">{item.period}</span>
                     </div>
 
-                    <p className="text-xs text-slate-400 mt-1 flex items-center gap-3">
-                      <span className="flex items-center gap-1">
-                        <MapPin className="w-3.5 h-3.5 text-slate-500" />
-                        Room {item.room}
-                      </span>
-                      <span>•</span>
-                      <span>{periodTime}</span>
-                    </p>
-                  </div>
-                </div>
-
-                {/* Teacher / Substitute info */}
-                <div className="flex items-center justify-between sm:justify-end gap-6 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-800/60">
-                  <div className="text-left sm:text-right">
-                    {isSub ? (
-                      <div>
-                        <div className="flex items-center sm:justify-end gap-1.5">
-                          <UserCheck className="w-4 h-4 text-emerald-400" />
-                          <span className="text-xs font-bold text-emerald-300">{item.substitute}</span>
-                          <span className="text-[10px] text-emerald-400 font-semibold">(Substitute)</span>
-                        </div>
-                        <p className="text-[10px] text-slate-500">Regular: {item.teacher} (On Leave)</p>
-                      </div>
-                    ) : (
-                      <div>
-                        <div className="flex items-center sm:justify-end gap-1.5">
-                          <User className="w-3.5 h-3.5 text-slate-400" />
-                          <span className="text-xs font-semibold text-slate-200">{item.teacher}</span>
-                        </div>
-                        <p className="text-[10px] text-slate-500">Faculty Instructor</p>
-                      </div>
-                    )}
+                    <div>
+                      <h4 className="font-serif text-base font-bold text-forest-900">
+                        {item.subject}
+                      </h4>
+                      <p className="text-xs text-gray-500 mt-0.5 flex items-center gap-2 flex-wrap">
+                        <span className="font-semibold text-gray-700">{item.teacher}</span>
+                        <span>&bull;</span>
+                        <span className="flex items-center gap-1 font-mono text-gray-600">
+                          <MapPin className="w-3 h-3 text-gold-600" />
+                          {item.room}
+                        </span>
+                        <span>&bull;</span>
+                        <span className="font-mono text-gray-500">{pMeta?.time}</span>
+                      </p>
+                      {item.topic && (
+                        <p className="text-[11.5px] text-[#8C6218] mt-1 font-medium">
+                          Today's Focus: <em>{item.topic}</em>
+                        </p>
+                      )}
+                    </div>
                   </div>
 
-                  <span className={`px-2.5 py-1 rounded-full text-[11px] font-semibold border ${
-                    item.status === 'Completed'
-                      ? 'bg-slate-800 text-slate-400 border-slate-700'
-                      : item.status === 'Upcoming'
-                      ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
-                      : 'bg-slate-900 text-slate-300 border-slate-800'
-                  }`}>
-                    {item.status}
-                  </span>
+                  <div className="flex items-center gap-2 self-end sm:self-center">
+                    <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                      Regular Session
+                    </span>
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* ── Weekly Full Grid Overview (Desktop) ── */}
-      <div className="hidden lg:block bg-slate-900/60 backdrop-blur-md border border-slate-800 rounded-2xl overflow-hidden shadow-xl p-6 space-y-4">
-        <h3 className="text-sm font-bold uppercase tracking-wider text-slate-400">Weekly Master Timetable Matrix</h3>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
-            <thead>
-              <tr className="border-b border-slate-800 text-slate-400 font-semibold uppercase">
-                <th className="py-3 px-3">Period</th>
-                {days.map(d => (
-                  <th key={d} className="py-3 px-3">{d === 'Mon' ? 'Monday' : d === 'Tue' ? 'Tuesday' : d === 'Wed' ? 'Wednesday' : d === 'Thu' ? 'Thursday' : 'Friday'}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-800/60">
-              {periods.map(p => (
-                <tr key={p.period} className="hover:bg-slate-800/30 transition-colors">
-                  <td className="py-3 px-3 font-bold text-white whitespace-nowrap">
-                    P{p.period}
-                    <span className="block text-[10px] text-slate-500 font-normal">{p.time.split('–')[0]}</span>
-                  </td>
-                  {days.map(d => {
-                    const cell = schedule[d]?.find(c => c.period === p.period);
-                    if (!cell) return <td key={d} className="py-3 px-3 text-slate-600">—</td>;
-                    return (
-                      <td key={d} className="py-3 px-3">
-                        <div className={`p-2 rounded-lg border ${
-                          cell.isSubstitute
-                            ? 'bg-emerald-500/10 border-emerald-500/30'
-                            : 'bg-slate-950/60 border-slate-800'
-                        }`}>
-                          <p className="font-bold text-slate-200 truncate">{cell.subject}</p>
-                          <p className="text-[10px] text-slate-400 truncate">
-                            {cell.isSubstitute ? (
-                              <span className="text-emerald-400 font-semibold">{cell.substitute} (Sub)</span>
-                            ) : (
-                              cell.teacher
-                            )}
-                          </p>
-                          <p className="text-[9px] text-slate-500">Rm {cell.room}</p>
-                        </div>
-                      </td>
-                    );
-                  })}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Class Detail Modal */}
-      {selectedClassModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-              <div>
-                <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">Period {selectedClassModal.period}</span>
-                <h3 className="text-xl font-bold text-white">{selectedClassModal.subject}</h3>
+      {/* ── SLOT DETAIL POPUP MODAL ── */}
+      {selectedSlot && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-gray-200 space-y-4 relative">
+            <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+              <div className="flex items-center gap-2">
+                <BookOpen className="w-5 h-5 text-gold-600" />
+                <h3 className="font-serif text-lg font-bold text-forest-900">
+                  {selectedSlot.subject}
+                </h3>
               </div>
               <button 
-                onClick={() => setSelectedClassModal(null)}
-                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800"
+                type="button"
+                onClick={() => setSelectedSlot(null)}
+                className="p-1 rounded-lg text-gray-400 hover:text-gray-600 cursor-pointer"
               >
-                ✕
+                <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="space-y-3 text-xs">
-              <div className="flex items-center justify-between p-3 rounded-xl bg-slate-950 border border-slate-800">
-                <span className="text-slate-400">Classroom Location:</span>
-                <strong className="text-white">Room {selectedClassModal.room}</strong>
+            <div className="space-y-2.5 text-xs text-gray-600">
+              <div className="flex items-center justify-between p-2.5 bg-[#FAF8F3] rounded-xl border border-[#C5A880]/30">
+                <span>Period & Timing:</span>
+                <strong className="text-forest-900 font-mono">Period {selectedSlot.period} ({selectedSlot.time})</strong>
+              </div>
+              <div className="flex items-center justify-between p-2.5 bg-[#FAF8F3] rounded-xl border border-[#C5A880]/30">
+                <span>Instructor Faculty:</span>
+                <strong className="text-forest-900">{selectedSlot.teacher}</strong>
+              </div>
+              <div className="flex items-center justify-between p-2.5 bg-[#FAF8F3] rounded-xl border border-[#C5A880]/30">
+                <span>Classroom / Lab:</span>
+                <strong className="text-forest-900">{selectedSlot.room}</strong>
               </div>
 
-              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
-                <div className="flex items-center justify-between">
-                  <span className="text-slate-400">Instructor:</span>
-                  <strong className="text-white">{selectedClassModal.teacher}</strong>
-                </div>
-                {selectedClassModal.isSubstitute && (
-                  <div className="pt-2 mt-2 border-t border-slate-800/80 flex items-center justify-between text-emerald-400 font-bold">
-                    <span>Assigned Substitute:</span>
-                    <span>{selectedClassModal.substitute} (Covering)</span>
-                  </div>
-                )}
-              </div>
-
-              {selectedClassModal.note && (
-                <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs">
-                  {selectedClassModal.note}
+              {selectedSlot.topic && (
+                <div className="p-3 bg-amber-50/70 rounded-xl border border-amber-200 text-amber-950 space-y-1">
+                  <p className="font-bold text-[11px]">Curricular Syllabus & Exercise Notes:</p>
+                  <p className="italic text-[11.5px]">{selectedSlot.topic}</p>
                 </div>
               )}
             </div>
 
             <button
-              onClick={() => setSelectedClassModal(null)}
-              className="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs transition-colors"
+              type="button"
+              onClick={() => setSelectedSlot(null)}
+              className="w-full py-2.5 rounded-xl bg-forest-900 hover:bg-forest-800 text-white font-bold text-xs transition-colors cursor-pointer"
             >
-              Close Details
+              Close
             </button>
           </div>
         </div>
       )}
+
     </div>
   );
 }

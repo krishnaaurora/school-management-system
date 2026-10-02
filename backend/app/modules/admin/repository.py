@@ -47,7 +47,9 @@ class AdminRepository:
         if "id" not in teacher_dict:
             teacher_dict["id"] = f"TEA-{uuid.uuid4().hex[:8].upper()}"
         teacher_dict["_id"] = teacher_dict["id"]
-        teacher_dict.setdefault("createdAt", datetime.now(timezone.utc))
+        now = datetime.now(timezone.utc)
+        teacher_dict.setdefault("createdAt", now)
+        teacher_dict.setdefault("updatedAt", now)
         teacher_dict["employeeId"] = teacher_dict.get("employeeId", "").strip().upper()
 
         col = get_mongo_collection("teachers")
@@ -59,6 +61,21 @@ class AdminRepository:
 
         _IN_MEMORY_TEACHERS[teacher_dict["id"]] = dict(teacher_dict)
         return cls._normalize_doc(teacher_dict)
+
+    @classmethod
+    async def update_teacher_profile(cls, teacher_id: str, update_dict: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        update_dict["updatedAt"] = datetime.now(timezone.utc)
+        col = get_mongo_collection("teachers")
+        if col is not None:
+            try:
+                await col.update_one({"_id": teacher_id}, {"$set": update_dict})
+            except Exception:
+                pass
+
+        if teacher_id in _IN_MEMORY_TEACHERS:
+            _IN_MEMORY_TEACHERS[teacher_id].update(update_dict)
+            return dict(_IN_MEMORY_TEACHERS[teacher_id])
+        return await cls.find_teacher_by_id(teacher_id)
 
     @classmethod
     async def find_all_teachers(cls) -> List[Dict[str, Any]]:
@@ -114,7 +131,9 @@ class AdminRepository:
         if "id" not in student_dict:
             student_dict["id"] = f"STU-{uuid.uuid4().hex[:8].upper()}"
         student_dict["_id"] = student_dict["id"]
-        student_dict.setdefault("createdAt", datetime.now(timezone.utc))
+        now = datetime.now(timezone.utc)
+        student_dict.setdefault("createdAt", now)
+        student_dict.setdefault("updatedAt", now)
         student_dict["admissionNumber"] = student_dict.get("admissionNumber", "").strip().upper()
 
         col = get_mongo_collection("students")
@@ -126,6 +145,21 @@ class AdminRepository:
 
         _IN_MEMORY_STUDENTS[student_dict["id"]] = dict(student_dict)
         return cls._normalize_doc(student_dict)
+
+    @classmethod
+    async def update_student_profile(cls, student_id: str, update_dict: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        update_dict["updatedAt"] = datetime.now(timezone.utc)
+        col = get_mongo_collection("students")
+        if col is not None:
+            try:
+                await col.update_one({"_id": student_id}, {"$set": update_dict})
+            except Exception:
+                pass
+
+        if student_id in _IN_MEMORY_STUDENTS:
+            _IN_MEMORY_STUDENTS[student_id].update(update_dict)
+            return dict(_IN_MEMORY_STUDENTS[student_id])
+        return await cls.find_student_by_id(student_id)
 
     @classmethod
     async def find_all_students(cls) -> List[Dict[str, Any]]:

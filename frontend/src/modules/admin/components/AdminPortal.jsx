@@ -4,10 +4,16 @@ import {
   LayoutDashboard, Users, GraduationCap, Building2, Calendar, 
   ClipboardCheck, Mail, Sparkles, RefreshCw, Bell, BarChart3, 
   Settings, LogOut, CheckCircle2, AlertTriangle, Clock, ArrowRight, 
-  Search, Filter, ChevronRight, X, UserCheck, Shield, ChevronDown,
-  Check, FileText, Bot, AlertCircle, ArrowUpRight, Phone, Award
+  Search, Filter, ChevronRight, ChevronLeft, X, UserCheck, Shield, ChevronDown,
+  Check, FileText, Bot, AlertCircle, ArrowUpRight, Phone, Award,
+  UserPlus, PanelLeftClose, PanelLeftOpen, MessageSquareText, Eye
 } from 'lucide-react';
 import GisEmblem from '../../../components/ui/GisEmblem';
+import GisAiAssistantLogo from '../../../components/ui/GisAiAssistantLogo';
+import UserManagementModule from './UserManagement/UserManagementModule';
+import AdminCopilotModal from './AdminCopilotModal';
+import TimetableMatrixModule from './TimetableManagement/TimetableMatrixModule';
+import LeaveLetterModal from './LeaveLetterModal';
 import { 
   INITIAL_LEAVE_REQUESTS, TEACHERS_LIST, STUDENTS_LIST, 
   TIMETABLE_SCHEDULE, AI_SAMPLE_QUERIES 
@@ -15,8 +21,12 @@ import {
 
 export default function AdminPortal({ onLogout, onNavigateHome }) {
   const [activeTab, setActiveTab] = useState('dashboard'); // 'dashboard' | 'students' | 'teachers' | 'classes' | 'timetable' | 'attendance' | 'leaves' | 'ai-insights' | 'substitute-planner' | 'notifications' | 'reports' | 'settings'
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [copilotOpen, setCopilotOpen] = useState(false);
   const [leaveRequests, setLeaveRequests] = useState(INITIAL_LEAVE_REQUESTS);
   const [selectedLeave, setSelectedLeave] = useState(null);
+  const [viewingLeaveLetter, setViewingLeaveLetter] = useState(null);
+  const [customSubstitutions, setCustomSubstitutions] = useState({});
   const [selectedTeacher, setSelectedTeacher] = useState(null);
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [leaveFilter, setLeaveFilter] = useState('Pending'); // 'Pending' | 'Approved' | 'Rejected'
@@ -37,13 +47,19 @@ export default function AdminPortal({ onLogout, onNavigateHome }) {
     setTimeout(() => setNotificationToast(null), 3500);
   };
 
-  // Leave Approval Action
+  // Leave Approval Action with Admin-Chosen Substitutions
   const handleApproveLeave = (leaveId) => {
     setLeaveRequests((prev) =>
       prev.map((req) => (req.id === leaveId ? { ...req, status: 'Approved' } : req))
     );
+    const assignedSummary = selectedLeave?.aiAnalysis?.recommendedPlan?.map((plan, idx) => {
+      const assigned = customSubstitutions[idx] || plan.teacherName;
+      return `${plan.period}: ${assigned}`;
+    }).join(', ');
+
     setSelectedLeave(null);
-    showToast(`Leave Request ${leaveId} Approved & Live Substitutions Activated!`);
+    setCustomSubstitutions({});
+    showToast(`Leave Approved! Substitutions confirmed (${assignedSummary || 'Active'}).`);
   };
 
   // Leave Rejection Action
@@ -124,14 +140,6 @@ export default function AdminPortal({ onLogout, onNavigateHome }) {
             )}
           </button>
 
-          {/* AI Intelligence quick access */}
-          <button
-            onClick={() => setActiveTab('ai-insights')}
-            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-forest-900 hover:bg-forest-800 text-white text-xs font-semibold tracking-wide transition-all shadow-xs cursor-pointer"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-gold-400" />
-            <span>AI Insights</span>
-          </button>
 
           {/* Admin User Profile */}
           <div className="flex items-center gap-2 pl-2 border-l border-gray-200">
@@ -155,87 +163,182 @@ export default function AdminPortal({ onLogout, onNavigateHome }) {
       </header>
 
       {/* ── 2. MAIN LAYOUT: SIDEBAR + CONTENT AREA ── */}
-      <div className="flex-1 pt-16 flex overflow-hidden">
+      <div className="flex-1 pt-16 flex relative min-h-[calc(100vh-4rem)]">
         
-        {/* ── SIDEBAR ── */}
-        <aside className="w-64 bg-white border-r border-gray-200/80 flex flex-col justify-between py-6 px-4 shrink-0 overflow-y-auto hidden md:flex">
-          <div className="space-y-6">
+        {/* ── SIDEBAR (STICKY & COLLAPSIBLE) ── */}
+        <aside className={`${
+          sidebarCollapsed ? 'w-20 overflow-visible' : 'w-64 overflow-y-auto'
+        } bg-white border-r border-gray-200/80 flex flex-col justify-between py-5 px-3.5 shrink-0 hidden md:flex transition-all duration-300 sticky top-16 h-[calc(100vh-4rem)] z-30`}>
+          <div className="space-y-5">
             
+            {/* Collapse / Expand Toggle Bar */}
+            <div className="flex items-center justify-between px-1 pb-2 border-b border-gray-100">
+              {!sidebarCollapsed && (
+                <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400">
+                  Navigation
+                </span>
+              )}
+              <div className="relative group">
+                <button
+                  type="button"
+                  onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+                  className={`p-1.5 rounded-xl hover:bg-gray-100 text-gray-500 hover:text-forest-900 transition-colors cursor-pointer ${sidebarCollapsed ? 'mx-auto' : ''}`}
+                >
+                  {sidebarCollapsed ? <PanelLeftOpen className="w-4 h-4" /> : <PanelLeftClose className="w-4 h-4" />}
+                </button>
+                {sidebarCollapsed && (
+                  <div className="pointer-events-none absolute left-full ml-3.5 top-1/2 -translate-y-1/2 px-2.5 py-1.5 bg-[#0B2E23] text-gold-300 text-xs font-bold rounded-xl shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 scale-95 group-hover:scale-100 transition-all duration-150 z-50 border border-forest-700 flex items-center gap-1.5">
+                    <span>Expand Sidebar</span>
+                    <div className="absolute top-1/2 -left-1 -translate-y-1/2 w-2 h-2 bg-[#0B2E23] rotate-45 border-l border-b border-forest-700" />
+                  </div>
+                )}
+              </div>
+            </div>
+
             {/* Main Menu */}
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 px-3 mb-2">
-                Main
-              </p>
+              {!sidebarCollapsed && (
+                <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 px-2 mb-2">
+                  Main
+                </p>
+              )}
               <nav className="space-y-1">
                 {[
                   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-                  { id: 'students', label: 'Students', icon: GraduationCap },
-                  { id: 'teachers', label: 'Teachers', icon: Users },
                   { id: 'classes', label: 'Classes & Sections', icon: Building2 },
-                  { id: 'timetable', label: 'Timetable', icon: Calendar },
+                  { id: 'timetable', label: 'Timetable Matrix', icon: Calendar },
                   { id: 'attendance', label: 'Attendance', icon: ClipboardCheck },
                 ].map((item) => {
                   const Icon = item.icon;
                   const isActive = activeTab === item.id;
                   return (
-                    <button
-                      key={item.id}
-                      onClick={() => setActiveTab(item.id)}
-                      className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
-                        isActive
-                          ? 'bg-[#0D3B2E] text-white shadow-sm'
-                          : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-                      }`}
-                    >
-                      <Icon className={`w-4 h-4 ${isActive ? 'text-gold-400' : 'text-gray-500'}`} />
-                      <span>{item.label}</span>
-                    </button>
+                    <div key={item.id} className="relative group">
+                      <button
+                        onClick={() => setActiveTab(item.id)}
+                        className={`w-full flex items-center ${sidebarCollapsed ? 'justify-center px-2' : 'gap-3 px-3.5'} py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                          isActive
+                            ? 'bg-[#0D3B2E] text-white shadow-sm'
+                            : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                        }`}
+                      >
+                        <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-gold-400' : 'text-gray-500'}`} />
+                        {!sidebarCollapsed && <span>{item.label}</span>}
+                      </button>
+
+                      {/* Hover Tooltip when Collapsed */}
+                      {sidebarCollapsed && (
+                        <div className="pointer-events-none absolute left-full ml-3.5 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-[#0B2E23] text-gold-300 text-xs font-bold rounded-xl shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 scale-95 group-hover:scale-100 transition-all duration-150 z-50 border border-forest-700 flex items-center gap-1.5">
+                          <span>{item.label}</span>
+                          <div className="absolute top-1/2 -left-1 -translate-y-1/2 w-2 h-2 bg-[#0B2E23] rotate-45 border-l border-b border-forest-700" />
+                        </div>
+                      )}
+                    </div>
                   );
                 })}
               </nav>
             </div>
 
-            {/* Operations Menu (HIGHLIGHTED / PROMINENT) */}
+            {/* User Management Menu */}
             <div>
-              <div className="flex items-center justify-between px-3 mb-2">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-[#8C6218]">
-                  Operations & Leave AI
+              {!sidebarCollapsed ? (
+                <p className="text-[10px] font-bold uppercase tracking-wider text-[#8C6218] px-2 mb-2">
+                  User Management
                 </p>
-                {pendingLeaves.length > 0 && (
-                  <span className="px-1.5 py-0.5 rounded-full bg-amber-500 text-white text-[9px] font-bold">
-                    {pendingLeaves.length}
-                  </span>
-                )}
-              </div>
+              ) : (
+                <div className="h-px bg-gray-200 my-2" />
+              )}
+              <nav className="space-y-1">
+                {[
+                  { id: 'staff-students', label: 'Staff & Students', icon: Users },
+                  { id: 'registration', label: 'Registration Hub', icon: UserPlus },
+                ].map((item) => {
+                  const Icon = item.icon;
+                  const isActive = activeTab === item.id || (item.id === 'staff-students' && (activeTab === 'teachers' || activeTab === 'students' || activeTab === 'user-management'));
+                  return (
+                    <div key={item.id} className="relative group">
+                      <button
+                        onClick={() => setActiveTab(item.id)}
+                        className={`w-full flex items-center ${sidebarCollapsed ? 'justify-center px-2' : 'gap-3 px-3.5'} py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                          isActive
+                            ? 'bg-[#0D3B2E] text-white shadow-sm'
+                            : 'text-gray-700 bg-[#FAF8F3] hover:bg-[#F2EFE8] hover:text-[#0B2E23] border border-[#C5A880]/20'
+                        }`}
+                      >
+                        <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-gold-400' : 'text-[#96661E]'}`} />
+                        {!sidebarCollapsed && <span>{item.label}</span>}
+                      </button>
+
+                      {/* Hover Tooltip when Collapsed */}
+                      {sidebarCollapsed && (
+                        <div className="pointer-events-none absolute left-full ml-3.5 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-[#0B2E23] text-gold-300 text-xs font-bold rounded-xl shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 scale-95 group-hover:scale-100 transition-all duration-150 z-50 border border-forest-700 flex items-center gap-1.5">
+                          <span>{item.label}</span>
+                          <div className="absolute top-1/2 -left-1 -translate-y-1/2 w-2 h-2 bg-[#0B2E23] rotate-45 border-l border-b border-forest-700" />
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </nav>
+            </div>
+
+            {/* Operations Menu */}
+            <div>
+              {!sidebarCollapsed ? (
+                <div className="flex items-center justify-between px-2 mb-2">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-[#8C6218]">
+                    Operations
+                  </p>
+                  {pendingLeaves.length > 0 && (
+                    <span className="px-1.5 py-0.5 rounded-full bg-amber-500 text-white text-[9px] font-bold">
+                      {pendingLeaves.length}
+                    </span>
+                  )}
+                </div>
+              ) : (
+                <div className="h-px bg-gray-200 my-2" />
+              )}
               <nav className="space-y-1">
                 {[
                   { id: 'leaves', label: 'Leave Requests', icon: Mail, badge: pendingLeaves.length },
-                  { id: 'ai-insights', label: 'AI Leave Analysis', icon: Sparkles },
                   { id: 'substitute-planner', label: 'Substitute Planner', icon: RefreshCw },
                   { id: 'notifications', label: 'Notifications', icon: Bell },
                 ].map((item) => {
                   const Icon = item.icon;
                   const isActive = activeTab === item.id;
                   return (
-                    <button
-                      key={item.id}
-                      onClick={() => setActiveTab(item.id)}
-                      className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
-                        isActive
-                          ? 'bg-[#0D3B2E] text-white shadow-sm'
-                          : 'text-gray-700 bg-[#FAF8F3] hover:bg-[#F2EFE8] hover:text-[#0B2E23] border border-[#C5A880]/20'
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <Icon className={`w-4 h-4 ${isActive ? 'text-gold-400' : 'text-[#96661E]'}`} />
-                        <span>{item.label}</span>
-                      </div>
-                      {item.badge > 0 && (
-                        <span className="px-1.5 py-0.2 bg-red-500 text-white rounded-full text-[10px] font-bold">
-                          {item.badge}
-                        </span>
+                    <div key={item.id} className="relative group">
+                      <button
+                        onClick={() => setActiveTab(item.id)}
+                        className={`w-full flex items-center ${sidebarCollapsed ? 'justify-center px-2' : 'justify-between px-3.5'} py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                          isActive
+                            ? 'bg-[#0D3B2E] text-white shadow-sm'
+                            : 'text-gray-700 bg-[#FAF8F3] hover:bg-[#F2EFE8] hover:text-[#0B2E23] border border-[#C5A880]/20'
+                        }`}
+                      >
+                        <div className={`flex items-center ${sidebarCollapsed ? 'justify-center' : 'gap-3'}`}>
+                          <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-gold-400' : 'text-[#96661E]'}`} />
+                          {!sidebarCollapsed && <span>{item.label}</span>}
+                        </div>
+                        {!sidebarCollapsed && item.badge > 0 && (
+                          <span className="px-1.5 py-0.2 bg-red-500 text-white rounded-full text-[10px] font-bold">
+                            {item.badge}
+                          </span>
+                        )}
+                      </button>
+
+                      {/* Hover Tooltip when Collapsed */}
+                      {sidebarCollapsed && (
+                        <div className="pointer-events-none absolute left-full ml-3.5 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-[#0B2E23] text-gold-300 text-xs font-bold rounded-xl shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 scale-95 group-hover:scale-100 transition-all duration-150 z-50 border border-forest-700 flex items-center gap-1.5">
+                          <span>{item.label}</span>
+                          {item.badge > 0 && (
+                            <span className="px-1.5 py-0.5 bg-red-500 text-white rounded-full text-[9px] font-extrabold">
+                              {item.badge}
+                            </span>
+                          )}
+                          <div className="absolute top-1/2 -left-1 -translate-y-1/2 w-2 h-2 bg-[#0B2E23] rotate-45 border-l border-b border-forest-700" />
+                        </div>
                       )}
-                    </button>
+                    </div>
                   );
                 })}
               </nav>
@@ -243,9 +346,13 @@ export default function AdminPortal({ onLogout, onNavigateHome }) {
 
             {/* Reports & System */}
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 px-3 mb-2">
-                Reports & System
-              </p>
+              {!sidebarCollapsed ? (
+                <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 px-2 mb-2">
+                  Reports & System
+                </p>
+              ) : (
+                <div className="h-px bg-gray-200 my-2" />
+              )}
               <nav className="space-y-1">
                 {[
                   { id: 'reports', label: 'Reports & Analytics', icon: BarChart3 },
@@ -254,18 +361,27 @@ export default function AdminPortal({ onLogout, onNavigateHome }) {
                   const Icon = item.icon;
                   const isActive = activeTab === item.id;
                   return (
-                    <button
-                      key={item.id}
-                      onClick={() => setActiveTab(item.id)}
-                      className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
-                        isActive
-                          ? 'bg-[#0D3B2E] text-white shadow-sm'
-                          : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-                      }`}
-                    >
-                      <Icon className={`w-4 h-4 ${isActive ? 'text-gold-400' : 'text-gray-500'}`} />
-                      <span>{item.label}</span>
-                    </button>
+                    <div key={item.id} className="relative group">
+                      <button
+                        onClick={() => setActiveTab(item.id)}
+                        className={`w-full flex items-center ${sidebarCollapsed ? 'justify-center px-2' : 'gap-3 px-3.5'} py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                          isActive
+                            ? 'bg-[#0D3B2E] text-white shadow-sm'
+                            : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                        }`}
+                      >
+                        <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-gold-400' : 'text-gray-500'}`} />
+                        {!sidebarCollapsed && <span>{item.label}</span>}
+                      </button>
+
+                      {/* Hover Tooltip when Collapsed */}
+                      {sidebarCollapsed && (
+                        <div className="pointer-events-none absolute left-full ml-3.5 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-[#0B2E23] text-gold-300 text-xs font-bold rounded-xl shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 scale-95 group-hover:scale-100 transition-all duration-150 z-50 border border-forest-700 flex items-center gap-1.5">
+                          <span>{item.label}</span>
+                          <div className="absolute top-1/2 -left-1 -translate-y-1/2 w-2 h-2 bg-[#0B2E23] rotate-45 border-l border-b border-forest-700" />
+                        </div>
+                      )}
+                    </div>
                   );
                 })}
               </nav>
@@ -275,10 +391,21 @@ export default function AdminPortal({ onLogout, onNavigateHome }) {
 
           {/* Quick Footer */}
           <div className="pt-4 border-t border-gray-200 text-xs text-gray-500 flex items-center justify-between">
-            <span className="text-[11px]">GIS Portal v2.4</span>
-            <button onClick={onNavigateHome} className="text-forest-800 hover:underline text-[11px] font-semibold">
-              Public Site &rarr;
-            </button>
+            {!sidebarCollapsed && <span className="text-[11px]">GIS v2.4</span>}
+            <div className="relative group mx-auto">
+              <button 
+                onClick={onNavigateHome} 
+                className={`text-forest-800 hover:underline text-[11px] font-semibold ${sidebarCollapsed ? 'mx-auto' : ''}`}
+              >
+                {sidebarCollapsed ? '🌐' : 'Public Site →'}
+              </button>
+              {sidebarCollapsed && (
+                <div className="pointer-events-none absolute left-full ml-3.5 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-[#0B2E23] text-gold-300 text-xs font-bold rounded-xl shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 scale-95 group-hover:scale-100 transition-all duration-150 z-50 border border-forest-700 flex items-center gap-1.5">
+                  <span>Public Site</span>
+                  <div className="absolute top-1/2 -left-1 -translate-y-1/2 w-2 h-2 bg-[#0B2E23] rotate-45 border-l border-b border-forest-700" />
+                </div>
+              )}
+            </div>
           </div>
         </aside>
 
@@ -306,12 +433,12 @@ export default function AdminPortal({ onLogout, onNavigateHome }) {
           <div className="md:hidden flex overflow-x-auto gap-2 pb-3 mb-4 scrollbar-none">
             {[
               { id: 'dashboard', label: 'Dashboard' },
-              { id: 'leaves', label: `Leaves (${pendingLeaves.length})` },
-              { id: 'substitute-planner', label: 'Substitute Planner' },
               { id: 'teachers', label: 'Teachers' },
               { id: 'students', label: 'Students' },
+              { id: 'registration', label: '+ Registration' },
+              { id: 'leaves', label: `Leaves (${pendingLeaves.length})` },
+              { id: 'substitute-planner', label: 'Substitute Planner' },
               { id: 'timetable', label: 'Timetable' },
-              { id: 'ai-insights', label: 'AI Insights' },
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -342,14 +469,18 @@ export default function AdminPortal({ onLogout, onNavigateHome }) {
               {/* 4 Key Metric Cards */}
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
                 {[
-                  { label: "Total Students", value: "1,248", icon: GraduationCap, trend: "+12 this term", color: "text-blue-700", bg: "bg-blue-50/80" },
-                  { label: "Faculty & Teachers", value: "68", icon: Users, trend: "4 on leave/sub", color: "text-emerald-700", bg: "bg-emerald-50/80" },
-                  { label: "Active Classes", value: "42", icon: Building2, trend: "Grades 1 to 12", color: "text-purple-700", bg: "bg-purple-50/80" },
-                  { label: "Pending Leave Requests", value: pendingLeaves.length.toString(), icon: AlertCircle, trend: "Requires action today", color: "text-amber-700", bg: "bg-amber-50/80" },
+                  { label: "Total Students", value: "1,248", icon: GraduationCap, trend: "Click to manage & enroll", color: "text-blue-700", bg: "bg-blue-50/80", tab: "students" },
+                  { label: "Faculty & Teachers", value: "68", icon: Users, trend: "Click to manage & provision", color: "text-emerald-700", bg: "bg-emerald-50/80", tab: "teachers" },
+                  { label: "Active Classes", value: "42", icon: Building2, trend: "Grades 1 to 12", color: "text-purple-700", bg: "bg-purple-50/80", tab: "classes" },
+                  { label: "Pending Leave Requests", value: pendingLeaves.length.toString(), icon: AlertCircle, trend: "Requires action today", color: "text-amber-700", bg: "bg-amber-50/80", tab: "leaves" },
                 ].map((stat, i) => {
                   const Icon = stat.icon;
                   return (
-                    <div key={i} className="bg-white p-5 rounded-2xl border border-gray-200 shadow-2xs">
+                    <div 
+                      key={i} 
+                      onClick={() => stat.tab && setActiveTab(stat.tab)}
+                      className="bg-white p-5 rounded-2xl border border-gray-200 shadow-2xs hover:border-gold-400/80 hover:shadow-md transition-all cursor-pointer"
+                    >
                       <div className="flex items-center justify-between mb-3">
                         <span className="text-xs font-semibold text-gray-500">{stat.label}</span>
                         <div className={`p-2 rounded-xl ${stat.bg} ${stat.color}`}>
@@ -366,6 +497,7 @@ export default function AdminPortal({ onLogout, onNavigateHome }) {
                   );
                 })}
               </div>
+
 
               {/* ⚠️ ACTION REQUIRED: Leave Requests Need Attention */}
               {pendingLeaves.length > 0 && (
@@ -541,6 +673,7 @@ export default function AdminPortal({ onLogout, onNavigateHome }) {
                         <th className="py-3.5 px-4 sm:px-6">Teacher</th>
                         <th className="py-3.5 px-4">Department</th>
                         <th className="py-3.5 px-4">Leave Date</th>
+                        <th className="py-3.5 px-4 min-w-[240px]">Leave Request & Reason</th>
                         <th className="py-3.5 px-4 text-center">Classes Affected</th>
                         <th className="py-3.5 px-4">Status</th>
                         <th className="py-3.5 px-4 text-right">Action</th>
@@ -570,6 +703,37 @@ export default function AdminPortal({ onLogout, onNavigateHome }) {
                             </td>
                             <td className="py-3.5 px-4 font-medium text-gray-700">{leave.department}</td>
                             <td className="py-3.5 px-4 font-medium text-gray-800">{leave.leaveDateFormatted}</td>
+                            <td className="py-3.5 px-4">
+                              <div className="space-y-1.5">
+                                <div className="flex items-center justify-between gap-2">
+                                  <div className="flex items-center gap-1.5">
+                                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-200">
+                                      {leave.type || 'Leave Request'}
+                                    </span>
+                                    {leave.appliedOn && (
+                                      <span className="text-[10px] text-gray-400">
+                                        Applied: {leave.appliedOn}
+                                      </span>
+                                    )}
+                                  </div>
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setViewingLeaveLetter(leave);
+                                    }}
+                                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-forest-50 hover:bg-forest-100 text-[#0B2E23] border border-forest-200 text-[10px] font-bold transition-all cursor-pointer shadow-2xs"
+                                    title="View Complete Formal Leave Letter"
+                                  >
+                                    <Eye className="w-3 h-3 text-emerald-700" />
+                                    <span>Leave Letter</span>
+                                  </button>
+                                </div>
+                                <p className="text-gray-800 font-medium line-clamp-2 leading-tight">
+                                  "{leave.reason}"
+                                </p>
+                              </div>
+                            </td>
                             <td className="py-3.5 px-4 text-center">
                               <span className="px-2.5 py-1 rounded-full bg-red-100 text-red-800 font-bold text-[11px]">
                                 {leave.classesAffectedCount} Classes
@@ -589,16 +753,29 @@ export default function AdminPortal({ onLogout, onNavigateHome }) {
                               </span>
                             </td>
                             <td className="py-3.5 px-4 text-right">
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setSelectedLeave(leave);
-                                }}
-                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-forest-900 hover:bg-forest-800 text-white text-xs font-semibold transition-all shadow-xs cursor-pointer"
-                              >
-                                <Sparkles className="w-3.5 h-3.5 text-gold-400" />
-                                <span>AI Impact Analysis</span>
-                              </button>
+                              <div className="flex items-center justify-end gap-1.5">
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setViewingLeaveLetter(leave);
+                                  }}
+                                  className="p-1.5 rounded-lg bg-gray-100 hover:bg-forest-100 text-gray-700 hover:text-forest-900 border border-gray-200 transition-all cursor-pointer"
+                                  title="View Complete Formal Leave Letter"
+                                >
+                                  <Eye className="w-3.5 h-3.5" />
+                                </button>
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setSelectedLeave(leave);
+                                  }}
+                                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-forest-900 hover:bg-forest-800 text-white text-xs font-semibold transition-all shadow-xs cursor-pointer"
+                                >
+                                  <Sparkles className="w-3.5 h-3.5 text-gold-400" />
+                                  <span>AI Review & Substitute</span>
+                                </button>
+                              </div>
                             </td>
                           </tr>
                         ))}
@@ -757,249 +934,18 @@ export default function AdminPortal({ onLogout, onNavigateHome }) {
             </div>
           )}
 
-          {/* ── 4. TEACHERS DIRECTORY VIEW ── */}
-          {activeTab === 'teachers' && (
-            <div className="space-y-6 animate-in fade-in duration-300">
-              
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                  <h1 className="font-serif text-2xl sm:text-3xl font-bold text-[#0B2E23]">
-                    Faculty & Teachers Directory
-                  </h1>
-                  <p className="text-xs sm:text-sm text-gray-500 mt-1">
-                    Manage 68 faculty members, qualifications, assigned workloads, and availability matrices.
-                  </p>
-                </div>
-
-                <div className="relative">
-                  <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
-                  <input
-                    type="text"
-                    value={teacherSearch}
-                    onChange={(e) => setTeacherSearch(e.target.value)}
-                    placeholder="Search teacher by name or subject..."
-                    className="pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-forest-800 w-64 shadow-2xs"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {TEACHERS_LIST
-                  .filter((t) =>
-                    t.name.toLowerCase().includes(teacherSearch.toLowerCase()) ||
-                    t.subject.toLowerCase().includes(teacherSearch.toLowerCase())
-                  )
-                  .map((teacher) => (
-                    <div
-                      key={teacher.id}
-                      onClick={() => setSelectedTeacher(teacher)}
-                      className="bg-white p-5 rounded-2xl border border-gray-200 shadow-2xs hover:border-gold-400/80 hover:shadow-md transition-all cursor-pointer flex flex-col justify-between"
-                    >
-                      <div>
-                        <div className="flex items-center gap-3 mb-3">
-                          <img
-                            src={teacher.avatar}
-                            alt={teacher.name}
-                            className="w-12 h-12 rounded-full object-cover border-2 border-forest-800/15"
-                          />
-                          <div>
-                            <h3 className="font-bold text-sm text-gray-900 leading-tight">{teacher.name}</h3>
-                            <p className="text-xs text-forest-800 font-semibold">{teacher.subject}</p>
-                          </div>
-                        </div>
-
-                        <div className="space-y-1.5 text-xs text-gray-600 bg-[#FAF8F3] p-3 rounded-xl mb-4">
-                          <div className="flex justify-between">
-                            <span>Classes:</span>
-                            <strong className="text-gray-900">{teacher.classes}</strong>
-                          </div>
-                          <div className="flex justify-between">
-                            <span>Weekly Load:</span>
-                            <strong className="text-gray-900">{teacher.weeklyPeriods} Periods</strong>
-                          </div>
-                          <div className="flex justify-between">
-                            <span>Attendance:</span>
-                            <strong className="text-emerald-700">{teacher.attendance}</strong>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center justify-between pt-2 border-t border-gray-100 text-xs">
-                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                          teacher.status.includes('Leave') ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'
-                        }`}>
-                          {teacher.status}
-                        </span>
-                        <span className="text-forest-800 font-semibold">View Profile &rarr;</span>
-                      </div>
-                    </div>
-                  ))}
-              </div>
-
-            </div>
+          {/* ── 4. USER MANAGEMENT (STAFF & STUDENTS DIRECTORY, REGISTRATION HUB, ACCESS CONTROL & PROVISIONING) ── */}
+          {['user-management', 'staff-students', 'teachers', 'students', 'registration', 'register-teacher', 'register-student'].includes(activeTab) && (
+            <UserManagementModule
+              key={activeTab}
+              defaultSubTab={activeTab === 'user-management' ? 'staff-students' : activeTab}
+              showToast={showToast}
+            />
           )}
 
-          {/* ── 5. STUDENTS DIRECTORY VIEW ── */}
-          {activeTab === 'students' && (
-            <div className="space-y-6 animate-in fade-in duration-300">
-              
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                  <h1 className="font-serif text-2xl sm:text-3xl font-bold text-[#0B2E23]">
-                    Students Directory
-                  </h1>
-                  <p className="text-xs sm:text-sm text-gray-500 mt-1">
-                    Overview of 1,248 enrolled students across all grades and sections.
-                  </p>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <div className="relative">
-                    <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
-                    <input
-                      type="text"
-                      value={studentSearch}
-                      onChange={(e) => setStudentSearch(e.target.value)}
-                      placeholder="Search student by name..."
-                      className="pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-forest-800 w-56 shadow-2xs"
-                    />
-                  </div>
-
-                  <select
-                    value={studentClassFilter}
-                    onChange={(e) => setStudentClassFilter(e.target.value)}
-                    className="bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs font-semibold text-gray-700 focus:outline-none focus:ring-2 focus:ring-forest-800 shadow-2xs"
-                  >
-                    <option value="All">All Classes</option>
-                    <option value="10-A">Grade 10-A</option>
-                    <option value="9-B">Grade 9-B</option>
-                    <option value="8-A">Grade 8-A</option>
-                    <option value="8-B">Grade 8-B</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-2xs">
-                <table className="w-full text-left border-collapse text-xs">
-                  <thead>
-                    <tr className="bg-[#FAF8F3] border-b border-gray-200 text-gray-600 font-bold uppercase text-[11px]">
-                      <th className="py-3.5 px-6">Roll No</th>
-                      <th className="py-3.5 px-4">Student Name</th>
-                      <th className="py-3.5 px-4">Class & Section</th>
-                      <th className="py-3.5 px-4">Attendance</th>
-                      <th className="py-3.5 px-4">GPA</th>
-                      <th className="py-3.5 px-4">Guardian Contact</th>
-                      <th className="py-3.5 px-6 text-right">Status</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-100">
-                    {STUDENTS_LIST
-                      .filter((s) =>
-                        (studentClassFilter === 'All' || s.classId === studentClassFilter) &&
-                        s.name.toLowerCase().includes(studentSearch.toLowerCase())
-                      )
-                      .map((student) => (
-                        <tr
-                          key={student.id}
-                          className="hover:bg-gray-50 transition-colors cursor-pointer"
-                          onClick={() => setSelectedStudent(student)}
-                        >
-                          <td className="py-3.5 px-6 font-mono font-bold text-gray-600">{student.rollNo}</td>
-                          <td className="py-3.5 px-4 font-bold text-gray-900">{student.name}</td>
-                          <td className="py-3.5 px-4 font-semibold text-forest-800">{student.classId}</td>
-                          <td className="py-3.5 px-4">
-                            <span className={`font-bold ${parseInt(student.attendance) < 80 ? 'text-red-600' : 'text-emerald-700'}`}>
-                              {student.attendance}
-                            </span>
-                          </td>
-                          <td className="py-3.5 px-4 font-mono font-semibold">{student.gpa}</td>
-                          <td className="py-3.5 px-4 text-gray-600">
-                            {student.parentName} ({student.parentPhone})
-                          </td>
-                          <td className="py-3.5 px-6 text-right">
-                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                              student.status === 'Warning' ? 'bg-red-100 text-red-800' : 'bg-emerald-100 text-emerald-800'
-                            }`}>
-                              {student.status}
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
-                  </tbody>
-                </table>
-              </div>
-
-            </div>
-          )}
-
-          {/* ── 6. TIMETABLE VIEW ── */}
+          {/* ── 6. TIMETABLE MATRIX & CONFLICT ENGINE ── */}
           {activeTab === 'timetable' && (
-            <div className="space-y-6 animate-in fade-in duration-300">
-              
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                  <h1 className="font-serif text-2xl sm:text-3xl font-bold text-[#0B2E23]">
-                    Master Timetable Matrix
-                  </h1>
-                  <p className="text-xs sm:text-sm text-gray-500 mt-1">
-                    Live schedule filterable by grade, teacher, and day of the week.
-                  </p>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <select
-                    value={timetableClassFilter}
-                    onChange={(e) => setTimetableClassFilter(e.target.value)}
-                    className="bg-white border border-gray-200 rounded-xl px-3.5 py-2 text-xs font-semibold text-gray-800 shadow-2xs"
-                  >
-                    <option value="8-A">Grade 8-A</option>
-                    <option value="9-B">Grade 9-B</option>
-                    <option value="10-A">Grade 10-A</option>
-                  </select>
-
-                  <select
-                    value={timetableDayFilter}
-                    onChange={(e) => setTimetableDayFilter(e.target.value)}
-                    className="bg-white border border-gray-200 rounded-xl px-3.5 py-2 text-xs font-semibold text-gray-800 shadow-2xs"
-                  >
-                    {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].map((d) => (
-                      <option key={d} value={d}>{d}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-2xs">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-bold text-base text-gray-900">
-                    Schedule for {timetableClassFilter} &bull; {timetableDayFilter}
-                  </h3>
-                  <span className="text-xs text-gray-500">6 Periods Scheduled</span>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {(TIMETABLE_SCHEDULE[timetableClassFilter]?.[timetableDayFilter] || []).map((slot, idx) => (
-                    <div
-                      key={idx}
-                      className="p-4 rounded-xl bg-[#FAF8F3] border border-gray-200/80 flex flex-col justify-between"
-                    >
-                      <div className="flex items-center justify-between text-xs text-gray-500 mb-2">
-                        <span className="font-bold uppercase tracking-wider text-forest-800">
-                          Period {idx + 1}
-                        </span>
-                        <Clock className="w-3.5 h-3.5 text-gold-600" />
-                      </div>
-                      <div className="font-bold text-sm text-gray-900">{slot}</div>
-                      <div className="mt-3 pt-2 border-t border-gray-200/60 text-[11px] text-gray-500 flex justify-between">
-                        <span>Status: Live</span>
-                        <span className="text-emerald-700 font-semibold">Covered</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-            </div>
+            <TimetableMatrixModule />
           )}
 
           {/* ── 7. AI INSIGHTS & ANALYTICS VIEW ── */}
@@ -1141,9 +1087,29 @@ export default function AdminPortal({ onLogout, onNavigateHome }) {
                 </button>
               </div>
 
-              {/* Leave Reason Note */}
-              <div className="p-3.5 rounded-xl bg-gray-50 border border-gray-200 text-xs text-gray-700 mb-6">
-                <strong>Reason:</strong> {selectedLeave.reason}
+              {/* Leave Reason Card */}
+              <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-50/90 to-orange-50/80 border border-amber-200 text-xs mb-6 space-y-2 shadow-2xs">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <FileText className="w-4 h-4 text-amber-800" />
+                    <span className="font-bold text-amber-950 uppercase tracking-wider text-[11px]">
+                      Leave Request Details
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="px-2.5 py-0.5 rounded-full bg-amber-200/80 text-amber-900 font-bold text-[10px]">
+                      {selectedLeave.type || 'Leave Request'}
+                    </span>
+                    {selectedLeave.appliedOn && (
+                      <span className="text-[10px] text-gray-500 font-medium">
+                        Submitted: {selectedLeave.appliedOn}
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <div className="p-3 bg-white/90 rounded-xl border border-amber-200/60 text-gray-800 font-medium text-xs leading-relaxed">
+                  "{selectedLeave.reason}"
+                </div>
               </div>
 
               {/* Section 1: Classes Affected */}
@@ -1198,34 +1164,106 @@ export default function AdminPortal({ onLogout, onNavigateHome }) {
                 </p>
               </div>
 
-              {/* Section 3: Recommended Substitution Plan */}
+              {/* Section 3: Recommended Substitution Plan with Admin Selector */}
               <div className="mb-8">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-gray-800 mb-3 flex items-center gap-1.5">
-                  <UserCheck className="w-4 h-4 text-emerald-700" />
-                  <span>AI Recommended Substitution Schedule</span>
-                </h3>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-gray-800 flex items-center gap-1.5">
+                    <UserCheck className="w-4 h-4 text-emerald-700" />
+                    <span>AI Recommended Substitution Schedule</span>
+                  </h3>
+                  <span className="text-[11px] text-gray-500 font-medium">
+                    Admin can review or select substitute for each period:
+                  </span>
+                </div>
 
-                <div className="border border-gray-200 rounded-xl overflow-hidden">
+                <div className="border border-gray-200 rounded-2xl overflow-hidden shadow-2xs">
                   <table className="w-full text-left border-collapse text-xs">
                     <thead>
-                      <tr className="bg-gray-50 border-b border-gray-200 text-gray-600 font-bold text-[11px]">
-                        <th className="py-2.5 px-4">Period</th>
-                        <th className="py-2.5 px-4">Class</th>
-                        <th className="py-2.5 px-4">Subject</th>
-                        <th className="py-2.5 px-4">Assigned Substitute</th>
-                        <th className="py-2.5 px-4">Match Rationale</th>
+                      <tr className="bg-[#FAF8F3] border-b border-gray-200 text-gray-700 font-bold text-[11px]">
+                        <th className="py-3 px-4">Period</th>
+                        <th className="py-3 px-4">Class</th>
+                        <th className="py-3 px-4">Subject</th>
+                        <th className="py-3 px-4 min-w-[220px]">Assigned Substitute</th>
+                        <th className="py-3 px-4">Match Status & Rationale</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100">
-                      {selectedLeave.aiAnalysis.recommendedPlan.map((plan, idx) => (
-                        <tr key={idx} className="hover:bg-emerald-50/40">
-                          <td className="py-2.5 px-4 font-bold text-forest-900">{plan.period}</td>
-                          <td className="py-2.5 px-4 font-semibold">{plan.classId}</td>
-                          <td className="py-2.5 px-4 text-gray-600">{plan.subject}</td>
-                          <td className="py-2.5 px-4 font-bold text-emerald-800">{plan.teacherName}</td>
-                          <td className="py-2.5 px-4 text-gray-600">{plan.reason}</td>
-                        </tr>
-                      ))}
+                      {selectedLeave.aiAnalysis.recommendedPlan.map((plan, idx) => {
+                        const currentTeacherName = customSubstitutions[idx] !== undefined 
+                          ? customSubstitutions[idx] 
+                          : plan.teacherName;
+                        const isOriginalAI = currentTeacherName === plan.teacherName;
+
+                        return (
+                          <tr key={idx} className="hover:bg-emerald-50/40 transition-colors">
+                            <td className="py-3 px-4 font-bold text-forest-900">{plan.period}</td>
+                            <td className="py-3 px-4 font-semibold">{plan.classId}</td>
+                            <td className="py-3 px-4 text-gray-600">{plan.subject}</td>
+                            <td className="py-3 px-4">
+                              <select
+                                value={currentTeacherName}
+                                onChange={(e) => {
+                                  const val = e.target.value;
+                                  setCustomSubstitutions((prev) => ({
+                                    ...prev,
+                                    [idx]: val,
+                                  }));
+                                }}
+                                className={`w-full bg-white border font-bold text-xs rounded-xl px-3 py-2 cursor-pointer shadow-2xs focus:outline-none focus:ring-2 focus:ring-forest-800 ${
+                                  isOriginalAI 
+                                    ? 'border-emerald-300 text-emerald-950 bg-emerald-50/40' 
+                                    : 'border-amber-400 text-amber-950 bg-amber-50/50'
+                                }`}
+                              >
+                                <option value={plan.teacherName}>
+                                  ✨ {plan.teacherName} (AI Recommended)
+                                </option>
+                                
+                                {/* Eligible Analyzed Substitutes */}
+                                {selectedLeave.aiAnalysis.eligibleSubstitutes && 
+                                  selectedLeave.aiAnalysis.eligibleSubstitutes
+                                    .filter((s) => s.name !== plan.teacherName)
+                                    .map((sub, sIdx) => (
+                                      <option key={sIdx} value={sub.name}>
+                                        {sub.name} ({sub.matchScore ? `${sub.matchScore}% Match` : sub.subject})
+                                      </option>
+                                    ))}
+
+                                {/* Additional Faculty List */}
+                                {TEACHERS_LIST && TEACHERS_LIST
+                                  .filter((t) => {
+                                    const tName = t.name || `${t.firstName} ${t.lastName}`;
+                                    const alreadyListed = tName === plan.teacherName || 
+                                      (selectedLeave.aiAnalysis.eligibleSubstitutes && selectedLeave.aiAnalysis.eligibleSubstitutes.some(s => s.name === tName));
+                                    return !alreadyListed && tName !== selectedLeave.teacherName;
+                                  })
+                                  .map((t, tIdx) => {
+                                    const tName = t.name || `${t.firstName} ${t.lastName}`;
+                                    return (
+                                      <option key={`all-${tIdx}`} value={tName}>
+                                        {tName} ({t.department || 'Faculty'})
+                                      </option>
+                                    );
+                                  })}
+                              </select>
+                            </td>
+                            <td className="py-3 px-4 text-gray-600">
+                              <div className="flex flex-col gap-1">
+                                <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full w-fit ${
+                                  isOriginalAI 
+                                    ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' 
+                                    : 'bg-amber-100 text-amber-800 border border-amber-300'
+                                }`}>
+                                  {isOriginalAI ? '✨ Optimal AI Match' : '👤 Admin Override'}
+                                </span>
+                                <span className="text-[11px] text-gray-500">
+                                  {isOriginalAI ? plan.reason : 'Custom substitute designated by Administrator'}
+                                </span>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>
@@ -1258,6 +1296,20 @@ export default function AdminPortal({ onLogout, onNavigateHome }) {
 
             </motion.div>
           </div>
+        )}
+      </AnimatePresence>
+
+      {/* ── 3.1 COMPLETE FORMAL LEAVE APPLICATION LETTER MODAL ── */}
+      <AnimatePresence>
+        {viewingLeaveLetter && (
+          <LeaveLetterModal
+            leave={viewingLeaveLetter}
+            onClose={() => setViewingLeaveLetter(null)}
+            onProceedToSubstitute={(l) => {
+              setViewingLeaveLetter(null);
+              setSelectedLeave(l);
+            }}
+          />
         )}
       </AnimatePresence>
 
@@ -1310,6 +1362,40 @@ export default function AdminPortal({ onLogout, onNavigateHome }) {
           </div>
         </div>
       )}
+
+      {/* ── 5. FLOATING STICKY ROUND AI COPILOT BUTTON (RIGHT SIDE) ── */}
+      <div className="fixed bottom-6 right-6 z-40">
+        <button
+          type="button"
+          onClick={() => {
+            setCopilotOpen(true);
+            setSidebarCollapsed(true); // Auto-collapse left sidebar when copilot opens!
+          }}
+          className="relative group p-0.5 rounded-full bg-white text-white shadow-2xl hover:shadow-blue-500/30 border border-blue-200/80 hover:scale-108 active:scale-95 transition-all duration-300 cursor-pointer flex items-center justify-center"
+          title="Open GIS AI Operations Copilot"
+        >
+          {/* User-Provided AI Assistant Logo */}
+          <GisAiAssistantLogo size="lg" animated={true} className="w-13 h-13 sm:w-14 sm:h-14" />
+          
+          {/* Glowing pulse rings */}
+          <span className="absolute top-0.5 right-0.5 w-3.5 h-3.5 bg-emerald-400 rounded-full ring-2 ring-white animate-ping pointer-events-none" />
+          <span className="absolute top-0.5 right-0.5 w-3.5 h-3.5 bg-emerald-500 rounded-full ring-2 ring-white pointer-events-none" />
+
+          {/* Tooltip on Hover */}
+          <span className="absolute right-full mr-3 px-3 py-1.5 rounded-xl bg-[#0B2E23] text-gold-200 text-[11px] font-bold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-xl border border-gold-400/40">
+            ✨ GIS AI Operations Copilot
+          </span>
+        </button>
+      </div>
+
+      {/* ── 6. DRAGGABLE COPILOT SCREEN ── */}
+      <AdminCopilotModal
+        isOpen={copilotOpen}
+        onClose={() => setCopilotOpen(false)}
+        onNavigateTab={(tab) => {
+          setActiveTab(tab);
+        }}
+      />
 
     </div>
   );

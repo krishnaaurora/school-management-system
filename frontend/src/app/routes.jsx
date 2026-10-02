@@ -6,6 +6,7 @@ import TeacherPortalPage from '../modules/teacher/pages/TeacherPortalPage';
 import StudentPortalPage from '../modules/student/pages/StudentPortalPage';
 import SchoolAssistantModal from '../modules/assistant/components/SchoolAssistantModal';
 import AdmissionsModal from '../modules/admissions/components/AdmissionsModal';
+import SarvamVoiceAssistantButton from '../components/voice/SarvamVoiceAssistantButton';
 import { useAuth } from '../modules/auth/hooks/useAuth';
 
 export const ROUTES = {
@@ -160,8 +161,18 @@ export function AppRouter() {
         isOpen={admissionsOpen}
         onClose={() => setAdmissionsOpen(false)}
       />
+
+      {/* Sarvam AI Client-Side Voice Assistant Floating Button - Only on Landing Page */}
+      {currentView === ROUTES.HOME && (
+        <SarvamVoiceAssistantButton
+          orgId="019e90ca-b3c9-79f3-9722-9b051c1e9794"
+          workspaceId="019e90ca-b3fb-7068-87b1-86581ef98843"
+          appId="GIS-Voice-A-13665fa2-61ad"
+        />
+      )}
     </>
   );
 }
 
 export default AppRouter;
+

@@ -6,7 +6,6 @@ import Intro from '../components/Intro';
 import Leadership from '../components/Leadership';
 import SpecialFeatures from '../components/SpecialFeatures';
 import CampusExperience from '../components/CampusExperience';
-import AssistantCTA from '../components/AssistantCTA';
 import Contact from '../components/Contact';
 
 export default function LandingPage({
@@ -20,14 +19,12 @@ export default function LandingPage({
       <Navbar
         onOpenAdmissions={onOpenAdmissions}
         onOpenLogin={onOpenLogin}
-        onOpenAssistant={onOpenAssistant}
       />
 
       {/* Main Content Sections */}
       <main>
         <Hero
           onOpenAdmissions={onOpenAdmissions}
-          onOpenAssistant={onOpenAssistant}
         />
 
         <Intro onOpenAdmissions={onOpenAdmissions} />
@@ -38,9 +35,7 @@ export default function LandingPage({
 
         <CampusExperience />
 
-        <AssistantCTA onOpenAssistant={onOpenAssistant} />
-
-        <Contact onOpenAssistant={onOpenAssistant} />
+        <Contact onOpenAdmissions={onOpenAdmissions} />
       </main>
 
       {/* Footer */}

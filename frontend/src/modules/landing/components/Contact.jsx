@@ -330,33 +330,17 @@ export default function Contact({ onOpenAssistant }) {
                         </>
                       )}
                     </button>
-
-                    <button
-                      type="button"
-                      onClick={onOpenAssistant}
-                      className="inline-flex items-center justify-center gap-2 px-5 py-3 text-xs font-semibold text-forest-900 bg-forest-50 hover:bg-forest-100 border border-forest-800/20 rounded-md transition-all shadow-sm group"
-                    >
-                      <Sparkles className="w-3.5 h-3.5 text-gold-600 group-hover:scale-110 transition-transform" />
-                      <span>Talk to Us 24/7 (AI Assistant)</span>
-                    </button>
                   </div>
                 </form>
               )}
 
-              {/* 24/7 Banner Highlight */}
+              {/* Admissions Office Information Bar */}
               <div className="mt-7 pt-5 border-t border-ivory-border flex items-center justify-between gap-3 text-xs text-charcoal-600">
                 <div className="flex items-center gap-2.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-                  <span className="font-medium text-forest-950">Immediate assistance available:</span>
-                  <span className="hidden sm:inline text-charcoal-500">Admissions desk & 24/7 virtual assistant active</span>
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+                  <span className="font-medium text-forest-950">Admissions Desk Open:</span>
+                  <span className="text-charcoal-500">Mon - Sat (8:00 AM - 4:30 PM IST)</span>
                 </div>
-                <button
-                  type="button"
-                  onClick={onOpenAssistant}
-                  className="font-bold text-forest-800 hover:text-gold-700 underline text-xs shrink-0"
-                >
-                  Talk 24/7 →
-                </button>
               </div>
 
             </div>

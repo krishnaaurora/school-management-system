@@ -3,7 +3,9 @@ from fastapi import APIRouter, Depends, status
 from app.core.dependencies import require_roles
 from app.modules.admin.schemas import (
     CreateTeacherRequest,
+    UpdateTeacherRequest,
     CreateStudentRequest,
+    UpdateStudentRequest,
     UpdateUserStatusRequest,
     ResetPasswordRequest,
     AdminApiResponse,
@@ -29,10 +31,15 @@ async def create_teacher(
 @admin_router.get(
     "/teachers",
     response_model=AdminApiResponse,
-    summary="Admin lists all verified teachers",
+    summary="Admin lists all verified teachers with search & filtering",
 )
-async def list_teachers(current_admin: dict = Depends(require_roles("ADMIN"))):
-    return await AdminService.list_teachers()
+async def list_teachers(
+    search: Optional[str] = None,
+    department: Optional[str] = None,
+    status: Optional[str] = None,
+    current_admin: dict = Depends(require_roles("ADMIN")),
+):
+    return await AdminService.list_teachers(search=search, department=department, status_filter=status)
 
 
 @admin_router.get(
@@ -45,6 +52,45 @@ async def get_teacher(
     current_admin: dict = Depends(require_roles("ADMIN")),
 ):
     return await AdminService.get_teacher(teacher_id)
+
+
+@admin_router.put(
+    "/teachers/{teacher_id}",
+    response_model=AdminApiResponse,
+    summary="Admin updates teacher profile information",
+)
+async def update_teacher(
+    teacher_id: str,
+    data: UpdateTeacherRequest,
+    current_admin: dict = Depends(require_roles("ADMIN")),
+):
+    return await AdminService.update_teacher(teacher_id, data)
+
+
+@admin_router.patch(
+    "/teachers/{teacher_id}/status",
+    response_model=AdminApiResponse,
+    summary="Admin activates or deactivates teacher account",
+)
+async def update_teacher_status(
+    teacher_id: str,
+    data: UpdateUserStatusRequest,
+    current_admin: dict = Depends(require_roles("ADMIN")),
+):
+    return await AdminService.update_teacher_status(teacher_id, data.status)
+
+
+@admin_router.post(
+    "/teachers/{teacher_id}/reset-password",
+    response_model=AdminApiResponse,
+    summary="Admin resets teacher password and generates temporary credentials",
+)
+async def reset_teacher_password(
+    teacher_id: str,
+    data: ResetPasswordRequest,
+    current_admin: dict = Depends(require_roles("ADMIN")),
+):
+    return await AdminService.reset_teacher_password(teacher_id, data.newPassword)
 
 
 # ── Student Management ──
@@ -63,10 +109,15 @@ async def create_student(
 @admin_router.get(
     "/students",
     response_model=AdminApiResponse,
-    summary="Admin lists all enrolled students",
+    summary="Admin lists all enrolled students with search & filtering",
 )
-async def list_students(current_admin: dict = Depends(require_roles("ADMIN"))):
-    return await AdminService.list_students()
+async def list_students(
+    search: Optional[str] = None,
+    className: Optional[str] = None,
+    status: Optional[str] = None,
+    current_admin: dict = Depends(require_roles("ADMIN")),
+):
+    return await AdminService.list_students(search=search, class_name=className, status_filter=status)
 
 
 @admin_router.get(
@@ -79,6 +130,45 @@ async def get_student(
     current_admin: dict = Depends(require_roles("ADMIN")),
 ):
     return await AdminService.get_student(student_id)
+
+
+@admin_router.put(
+    "/students/{student_id}",
+    response_model=AdminApiResponse,
+    summary="Admin updates student profile information",
+)
+async def update_student(
+    student_id: str,
+    data: UpdateStudentRequest,
+    current_admin: dict = Depends(require_roles("ADMIN")),
+):
+    return await AdminService.update_student(student_id, data)
+
+
+@admin_router.patch(
+    "/students/{student_id}/status",
+    response_model=AdminApiResponse,
+    summary="Admin activates or deactivates student account",
+)
+async def update_student_status(
+    student_id: str,
+    data: UpdateUserStatusRequest,
+    current_admin: dict = Depends(require_roles("ADMIN")),
+):
+    return await AdminService.update_student_status(student_id, data.status)
+
+
+@admin_router.post(
+    "/students/{student_id}/reset-password",
+    response_model=AdminApiResponse,
+    summary="Admin resets student password and generates temporary credentials",
+)
+async def reset_student_password(
+    student_id: str,
+    data: ResetPasswordRequest,
+    current_admin: dict = Depends(require_roles("ADMIN")),
+):
+    return await AdminService.reset_student_password(student_id, data.newPassword)
 
 
 # ── User Account Lifecycle & RBAC Management ──

@@ -88,15 +88,6 @@ export default function Navbar({ onOpenAdmissions, onOpenLogin, onOpenAssistant 
         {/* Right: Actions */}
         <div className="hidden md:flex items-center gap-3">
           <button
-            onClick={onOpenAssistant}
-            className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold tracking-wide text-forest-800 bg-forest-50 hover:bg-forest-100 border border-forest-800/15 rounded-md transition-colors cursor-pointer"
-            title="School Assistant"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-gold-600" />
-            <span>Assistant</span>
-          </button>
-
-          <button
             onClick={handleLoginClick}
             className="flex items-center gap-2 px-5 py-2.5 text-xs uppercase tracking-widest font-bold text-ivory bg-forest-900 hover:bg-forest-800 border border-forest-950 rounded-md shadow-sm transition-all hover:shadow-subtle-elevated group cursor-pointer"
           >
@@ -137,19 +128,6 @@ export default function Navbar({ onOpenAdmissions, onOpenLogin, onOpenAssistant 
                 {link.name}
               </a>
             ))}
-            
-            <div className="pt-3 flex flex-col gap-2.5">
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  onOpenAssistant();
-                }}
-                className="w-full flex items-center justify-center gap-2 py-2.5 text-sm font-semibold text-forest-900 bg-forest-50 border border-forest-800/20 rounded-md"
-              >
-                <Sparkles className="w-4 h-4 text-gold-600" />
-                <span>Talk to School Assistant</span>
-              </button>
-            </div>
           </div>
         </div>
       )}
