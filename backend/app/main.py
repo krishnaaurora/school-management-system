@@ -1,6 +1,8 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
+from app.core.database import MongoManager
 
 # Domain Module Routers
 from app.modules.auth import auth_router
@@ -12,13 +14,24 @@ from app.modules.timetables import timetables_router
 from app.modules.ai_engine import ai_router
 from app.modules.admissions import admissions_router
 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup: Connect to MongoDB Azure Cosmos DB instance
+    await MongoManager.connect_to_database()
+    yield
+    # Shutdown: Close connection pool
+    await MongoManager.close_database_connection()
+
+
 app = FastAPI(
     title=settings.PROJECT_NAME,
     version=settings.VERSION,
-    description="Greenfield International School Management System — Python FastAPI Modular Monolith API",
+    description="Greenfield International School Management System — Python FastAPI Modular Monolith API with Azure Cosmos MongoDB",
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
     docs_url=f"{settings.API_V1_STR}/docs",
     redoc_url=f"{settings.API_V1_STR}/redoc",
+    lifespan=lifespan,
 )
 
 # ── CORS Middleware ──
@@ -33,11 +46,19 @@ app.add_middleware(
 # ── System Health Check ──
 @app.get("/api/health", tags=["System Health"])
 async def health_check():
+    db = MongoManager.get_database()
+    db_status = "CONNECTED" if db is not None else "DISCONNECTED"
+
     return {
         "status": "OPERATIONAL",
         "system": "Greenfield International School FastAPI Modular Monolith",
         "version": settings.VERSION,
         "environment": settings.ENVIRONMENT,
+        "database": {
+            "engine": "MongoDB (Azure Cosmos DB)",
+            "database_name": settings.MONGODB_DB_NAME,
+            "status": db_status,
+        },
         "docs": f"{settings.API_V1_STR}/docs",
     }
 

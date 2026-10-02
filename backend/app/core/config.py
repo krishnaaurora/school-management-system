@@ -17,6 +17,10 @@ class Settings(BaseSettings):
     ADMIN_EMAIL: str = "Admingis@gmail.com"
     ADMIN_PASSWORD: str = "GIS@admin123"
 
+    # Azure Cosmos DB / MongoDB Configuration
+    MONGODB_URI: str = "mongodb://azuremongodbdatabase:Yix6Ekz5pFnXCT1xO0JWx3kFWMKrL5mRLDSjdOFg6zSMXpW6oSBiEeryanWHYxoB2G8TmfzGBjxDACDbTm4ojQ%3D%3D@azuremongodbdatabase.mongo.cosmos.azure.com:10255/?ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000&appName=@azuremongodbdatabase@"
+    MONGODB_DB_NAME: str = "school"
+
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
 
