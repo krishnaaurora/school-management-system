@@ -11,17 +11,20 @@ import Footer from './components/Footer';
 import SchoolAssistantModal from './components/SchoolAssistantModal';
 import AdmissionsModal from './components/AdmissionsModal';
 import LoginPage from './components/LoginPage';
+import AdminPortal from './components/AdminPortal';
 
 export default function App() {
   const [admissionsOpen, setAdmissionsOpen] = useState(false);
   const [assistantOpen, setAssistantOpen] = useState(false);
-  const [currentView, setCurrentView] = useState('login'); // 'login' | 'landing'
+  const [currentView, setCurrentView] = useState('login'); // 'login' | 'admin' | 'landing'
 
-  // Hash route listener for easy #login / #home switching
+  // Hash route listener for easy #login / #admin / #home switching
   useEffect(() => {
     const handleHash = () => {
       const hash = window.location.hash;
-      if (hash === '#landing' || hash === '#home' || hash === '#about' || hash === '#academics' || hash === '#features' || hash === '#campus' || hash === '#contact') {
+      if (hash === '#admin') {
+        setCurrentView('admin');
+      } else if (hash === '#landing' || hash === '#home' || hash === '#about' || hash === '#academics' || hash === '#features' || hash === '#campus' || hash === '#contact') {
         setCurrentView('landing');
       } else if (hash === '#login') {
         setCurrentView('login');
@@ -33,6 +36,23 @@ export default function App() {
     return () => window.removeEventListener('hashchange', handleHash);
   }, []);
 
+  // ── ADMIN PORTAL VIEW ──
+  if (currentView === 'admin') {
+    return (
+      <AdminPortal
+        onLogout={() => {
+          setCurrentView('login');
+          window.location.hash = '#login';
+        }}
+        onNavigateHome={() => {
+          setCurrentView('landing');
+          window.location.hash = '#home';
+        }}
+      />
+    );
+  }
+
+  // ── LOGIN PAGE VIEW ──
   if (currentView === 'login') {
     return (
       <div className="min-h-screen bg-ivory text-charcoal-800 font-sans relative">
@@ -40,6 +60,12 @@ export default function App() {
           onNavigateHome={() => {
             setCurrentView('landing');
             window.location.hash = '#home';
+          }}
+          onLoginSuccess={(role, user) => {
+            if (role === 'admin') {
+              setCurrentView('admin');
+              window.location.hash = '#admin';
+            }
           }}
           onOpenAdmissions={() => setAdmissionsOpen(true)}
           onOpenAssistant={() => setAssistantOpen(true)}
@@ -62,6 +88,7 @@ export default function App() {
       </div>
     );
   }
+
 
   return (
     <div className="min-h-screen bg-ivory text-charcoal-800 font-sans relative">

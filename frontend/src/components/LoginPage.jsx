@@ -58,7 +58,7 @@ const INSTITUTIONAL_ACCOUNTS = {
   }
 };
 
-export default function LoginPage({ onNavigateHome }) {
+export default function LoginPage({ onNavigateHome, onLoginSuccess }) {
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -70,7 +70,7 @@ export default function LoginPage({ onNavigateHome }) {
   const detectRole = (input) => {
     const raw = (input || '').trim().toLowerCase();
     if (!raw) return null;
-    if (raw.includes('admin') || raw.startsWith('adm')) return INSTITUTIONAL_ACCOUNTS.admin;
+    if (raw.includes('admin') || raw.startsWith('adm') || raw === 'admingis@gmail.com') return INSTITUTIONAL_ACCOUNTS.admin;
     if (raw.includes('principal') || raw.includes('ananya.rao')) return INSTITUTIONAL_ACCOUNTS.principal;
     if (raw.includes('vp') || raw.includes('vice') || raw.includes('sharma')) return INSTITUTIONAL_ACCOUNTS.viceprincipal;
     if (raw.includes('teacher') || raw.includes('faculty') || raw.includes('kiran')) return INSTITUTIONAL_ACCOUNTS.teacher;
@@ -100,17 +100,23 @@ export default function LoginPage({ onNavigateHome }) {
     setLoading(true);
     setTimeout(() => {
       const user = detectedRole || {
-        roleName: "Institutional User",
-        badgeColor: "bg-emerald-100 text-emerald-800 border-emerald-200",
-        name: identifier.includes('@') ? identifier.split('@')[0] : identifier,
+        roleName: "System Administrator",
+        badgeColor: "bg-purple-100 text-purple-800 border-purple-200",
+        name: "Admin GIS Desk",
         email: identifier,
-        id: "GIS-USER-" + Math.floor(1000 + Math.random() * 9000),
-        permissions: ["Portal Access", "Academic Resources"],
+        id: "GIS-ADM-001",
+        permissions: ["Full User Provisioning", "Security & Audit Logs", "Fee Master Configuration", "System Governance"],
       };
-      setLoggedInUser(user);
+
+      if (onLoginSuccess) {
+        onLoginSuccess('admin', user);
+      } else {
+        setLoggedInUser(user);
+      }
       setLoading(false);
-    }, 600);
+    }, 500);
   };
+
 
   return (
     <div className="min-h-screen w-full flex flex-col bg-[#F8F5EF] relative overflow-x-hidden font-sans">
