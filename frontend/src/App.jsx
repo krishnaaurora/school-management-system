@@ -16,7 +16,7 @@ import AdminPortal from './components/AdminPortal';
 export default function App() {
   const [admissionsOpen, setAdmissionsOpen] = useState(false);
   const [assistantOpen, setAssistantOpen] = useState(false);
-  const [currentView, setCurrentView] = useState('login'); // 'login' | 'admin' | 'landing'
+  const [currentView, setCurrentView] = useState('landing'); // 'landing' (default) | 'login' | 'admin'
 
   // Hash route listener for easy #login / #admin / #home switching
   useEffect(() => {
@@ -24,10 +24,11 @@ export default function App() {
       const hash = window.location.hash;
       if (hash === '#admin') {
         setCurrentView('admin');
-      } else if (hash === '#landing' || hash === '#home' || hash === '#about' || hash === '#academics' || hash === '#features' || hash === '#campus' || hash === '#contact') {
-        setCurrentView('landing');
       } else if (hash === '#login') {
         setCurrentView('login');
+      } else {
+        // Default to landing page for root or any section hash
+        setCurrentView('landing');
       }
     };
 
