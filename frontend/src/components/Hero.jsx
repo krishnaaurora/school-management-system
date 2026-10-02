@@ -66,8 +66,8 @@ export default function Hero({ onOpenAdmissions, onOpenAssistant }) {
       {/* ── Centred composition ── */}
       <div className="relative z-10 flex flex-col items-center text-center px-6 w-full max-w-2xl mx-auto my-auto">
 
-        {/* 1 ── ANIMATED EXACT GIS CREST LOGO (Refined Compact Size) ── */}
-        <div className="relative mb-4 sm:mb-6 flex items-center justify-center">
+        {/* 1 ── ANIMATED EXACT GIS CREST LOGO ── */}
+        <div className="relative mb-5 sm:mb-7 flex items-center justify-center">
 
           {/* Ambient warm gold glow behind the crest */}
           <motion.div
@@ -76,18 +76,18 @@ export default function Hero({ onOpenAdmissions, onOpenAssistant }) {
             animate={{ opacity: [0, 0.85, 0.6], scale: [0.6, 1.1, 1] }}
             transition={{ duration: 2.2, delay: 0.3, ease: 'easeOut' }}
             style={{
-              width: '240px',
-              height: '240px',
+              width: '300px',
+              height: '300px',
               background:
                 'radial-gradient(circle, rgba(197,168,128,0.28) 0%, rgba(13,59,46,0.08) 45%, transparent 70%)',
-              filter: 'blur(24px)',
+              filter: 'blur(28px)',
             }}
           />
 
           {/* Floating wrapper for the entire animated emblem */}
           <motion.div
             className="relative flex items-center justify-center"
-            animate={{ y: [0, -5, 0] }}
+            animate={{ y: [0, -6, 0] }}
             transition={{
               duration: 5.5,
               ease: 'easeInOut',
@@ -97,7 +97,7 @@ export default function Hero({ onOpenAdmissions, onOpenAssistant }) {
           >
             {/* SVG Drawing Rings Overlay around the exact logo */}
             <svg
-              className="absolute -inset-3.5 sm:-inset-4 w-[calc(100%+28px)] sm:w-[calc(100%+32px)] h-[calc(100%+28px)] sm:h-[calc(100%+32px)] pointer-events-none z-20"
+              className="absolute -inset-4 sm:-inset-5 w-[calc(100%+32px)] sm:w-[calc(100%+40px)] h-[calc(100%+32px)] sm:h-[calc(100%+40px)] pointer-events-none z-20"
               viewBox="0 0 340 340"
               fill="none"
             >
@@ -137,9 +137,9 @@ export default function Hero({ onOpenAdmissions, onOpenAssistant }) {
               <motion.circle cx="10" cy="170" r="3" fill="#C5A880" initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 2.1, duration: 0.4 }} />
             </svg>
 
-            {/* Exact Logo Container with Circular Mask Draw & Multiply Blend (Compact) */}
+            {/* Exact Logo Container with Circular Mask Draw & Multiply Blend */}
             <motion.div
-              className="relative w-[140px] h-[140px] sm:w-[165px] sm:h-[165px] md:w-[185px] md:h-[185px] rounded-full overflow-hidden select-none flex items-center justify-center shadow-xl"
+              className="relative w-[185px] h-[185px] sm:w-[220px] sm:h-[220px] md:w-[250px] md:h-[250px] rounded-full overflow-hidden select-none flex items-center justify-center shadow-2xl"
               initial={{
                 clipPath: 'circle(0% at 50% 50%)',
                 opacity: 0,
@@ -163,7 +163,7 @@ export default function Hero({ onOpenAdmissions, onOpenAssistant }) {
               <img
                 src="/gis-crest.jpg"
                 alt="Greenfield International School Crest"
-                className="w-full h-full object-contain mix-blend-multiply select-none pointer-events-none p-0.5"
+                className="w-full h-full object-contain mix-blend-multiply select-none pointer-events-none p-1"
                 draggable={false}
               />
 
@@ -187,10 +187,10 @@ export default function Hero({ onOpenAdmissions, onOpenAssistant }) {
           </motion.div>
         </div>
 
-        {/* 2 ── SCHOOL NAME — typewriter effect compact badge ── */}
-        <div className="mb-4 sm:mb-5 min-h-[2rem] flex items-center justify-center">
-          <div className="inline-flex items-center justify-center px-3.5 sm:px-5 py-1 sm:py-1.5 rounded-full bg-[#0D3B2E]/95 backdrop-blur-md border border-[#C5A880]/60 shadow-md shadow-[#0D3B2E]/20">
-            <p className="text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs font-sans font-bold tracking-[0.16em] sm:tracking-[0.22em] uppercase text-[#F8F5EF] inline-flex items-center justify-center whitespace-nowrap">
+        {/* 2 ── SCHOOL NAME — typewriter effect badge ── */}
+        <div className="mb-4 sm:mb-6 min-h-[2.25rem] flex items-center justify-center">
+          <div className="inline-flex items-center justify-center px-4 sm:px-6 py-1.5 sm:py-2 rounded-full bg-[#0D3B2E]/95 backdrop-blur-md border border-[#C5A880]/60 shadow-lg shadow-[#0D3B2E]/25">
+            <p className="text-[10px] xs:text-[11px] sm:text-xs md:text-sm font-sans font-bold tracking-[0.18em] sm:tracking-[0.24em] uppercase text-[#F8F5EF] inline-flex items-center justify-center whitespace-nowrap">
               <span>{displayedText}</span>
               <motion.span
                 className="inline-block w-[2px] h-[1.1em] bg-[#C5A880] ml-1 sm:ml-1.5 align-middle"
@@ -205,21 +205,22 @@ export default function Hero({ onOpenAdmissions, onOpenAssistant }) {
           </div>
         </div>
 
-        {/* 3 ── HEADLINE — single line without white container, with white 'Grow.' ── */}
+        {/* 3 ── HEADLINE — prominent headline with white 'Grow.' ── */}
         <div className="overflow-hidden mb-3 sm:mb-4">
           <motion.h1
-            className="text-xl xs:text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-[#07241B] tracking-tight leading-[1.15] whitespace-nowrap drop-shadow-[0_2px_8px_rgba(255,255,255,0.9)]"
+            className="text-2xl xs:text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-[#07241B] tracking-tight leading-[1.15] whitespace-nowrap drop-shadow-[0_2px_12px_rgba(255,255,255,0.95)]"
             initial={{ y: '105%', opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.75, ease, delay: 1.9 }}
           >
             Dream. Learn.{' '}
-            <span className="italic font-bold text-white drop-shadow-[0_2px_6px_rgba(0,0,0,0.65)] px-1">
+            <span className="italic font-bold text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)] px-1">
               Grow.
             </span>{' '}
             Lead.
           </motion.h1>
         </div>
+
 
 
       </div>
