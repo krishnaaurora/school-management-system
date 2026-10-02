@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Intro from './components/Intro';
@@ -10,19 +10,68 @@ import Contact from './components/Contact';
 import Footer from './components/Footer';
 import SchoolAssistantModal from './components/SchoolAssistantModal';
 import AdmissionsModal from './components/AdmissionsModal';
-import LoginModal from './components/LoginModal';
+import LoginPage from './components/LoginPage';
 
 export default function App() {
   const [admissionsOpen, setAdmissionsOpen] = useState(false);
   const [assistantOpen, setAssistantOpen] = useState(false);
-  const [loginOpen, setLoginOpen] = useState(false);
+  const [currentView, setCurrentView] = useState('login'); // 'login' | 'landing'
+
+  // Hash route listener for easy #login / #home switching
+  useEffect(() => {
+    const handleHash = () => {
+      const hash = window.location.hash;
+      if (hash === '#landing' || hash === '#home' || hash === '#about' || hash === '#academics' || hash === '#features' || hash === '#campus' || hash === '#contact') {
+        setCurrentView('landing');
+      } else if (hash === '#login') {
+        setCurrentView('login');
+      }
+    };
+
+    handleHash();
+    window.addEventListener('hashchange', handleHash);
+    return () => window.removeEventListener('hashchange', handleHash);
+  }, []);
+
+  if (currentView === 'login') {
+    return (
+      <div className="min-h-screen bg-ivory text-charcoal-800 font-sans relative">
+        <LoginPage
+          onNavigateHome={() => {
+            setCurrentView('landing');
+            window.location.hash = '#home';
+          }}
+          onOpenAdmissions={() => setAdmissionsOpen(true)}
+          onOpenAssistant={() => setAssistantOpen(true)}
+        />
+
+        {/* Global Modals */}
+        <SchoolAssistantModal
+          isOpen={assistantOpen}
+          onClose={() => setAssistantOpen(false)}
+          onOpenAdmissions={() => {
+            setAssistantOpen(false);
+            setAdmissionsOpen(true);
+          }}
+        />
+
+        <AdmissionsModal
+          isOpen={admissionsOpen}
+          onClose={() => setAdmissionsOpen(false)}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-ivory text-charcoal-800 font-sans relative">
       {/* Navigation */}
       <Navbar
         onOpenAdmissions={() => setAdmissionsOpen(true)}
-        onOpenLogin={() => setLoginOpen(true)}
+        onOpenLogin={() => {
+          setCurrentView('login');
+          window.location.hash = '#login';
+        }}
         onOpenAssistant={() => setAssistantOpen(true)}
       />
 
@@ -83,11 +132,7 @@ export default function App() {
         isOpen={admissionsOpen}
         onClose={() => setAdmissionsOpen(false)}
       />
-
-      <LoginModal
-        isOpen={loginOpen}
-        onClose={() => setLoginOpen(false)}
-      />
     </div>
   );
 }
+
