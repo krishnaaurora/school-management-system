@@ -189,43 +189,43 @@ export default function LoginPage({ onNavigateHome, onLoginSuccess }) {
           </motion.div>
         </div>
 
-        {/* RIGHT COLUMN: Clean, Elegant Login Card (Exact Match to Reference Image) */}
-        <div className="relative z-10 w-full lg:w-2/5 flex items-center justify-center p-4 sm:p-8 lg:p-12">
+        {/* RIGHT COLUMN: Clean, Compact Login Card */}
+        <div className="relative z-10 w-full lg:w-2/5 flex items-center justify-center p-4 sm:p-6 lg:p-8">
           
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.15 }}
-            className="w-full max-w-md bg-white rounded-3xl shadow-2xl border border-gray-100 p-7 sm:p-9 relative overflow-hidden"
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="w-full max-w-[360px] sm:max-w-[375px] bg-white rounded-2xl shadow-xl border border-gray-100 p-5 sm:p-6 relative overflow-hidden"
           >
             
             {loggedInUser ? (
               /* ── LOGGED IN DASHBOARD VIEW ── */
-              <div className="py-4 text-center">
-                <div className="w-16 h-16 rounded-full bg-forest-50 border-2 border-forest-800/30 flex items-center justify-center mx-auto mb-4">
-                  <CheckCircle2 className="w-9 h-9 text-forest-800" />
+              <div className="py-2 text-center">
+                <div className="w-14 h-14 rounded-full bg-forest-50 border-2 border-forest-800/30 flex items-center justify-center mx-auto mb-3">
+                  <CheckCircle2 className="w-8 h-8 text-forest-800" />
                 </div>
 
-                <div className="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-2 border border-forest-800/20 bg-forest-50 text-forest-900">
+                <div className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider mb-2 border border-forest-800/20 bg-forest-50 text-forest-900">
                   {loggedInUser.roleName}
                 </div>
 
-                <h2 className="font-serif text-2xl font-bold text-[#0B2E23] mb-1">
+                <h2 className="font-serif text-xl font-bold text-[#0B2E23] mb-0.5">
                   Welcome, {loggedInUser.name}
                 </h2>
-                <p className="text-xs text-gray-500 mb-6 font-mono">
+                <p className="text-[11px] text-gray-500 mb-4 font-mono">
                   {loggedInUser.email} &bull; {loggedInUser.id}
                 </p>
 
                 {/* Role Permissions */}
-                <div className="text-left bg-[#F8F5EF] p-4 rounded-xl border border-gray-200 mb-6">
-                  <p className="text-xs font-bold uppercase tracking-wider text-[#0B2E23] mb-2.5">
+                <div className="text-left bg-[#F8F5EF] p-3 rounded-xl border border-gray-200 mb-4">
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-[#0B2E23] mb-2">
                     Authorized Portal Modules:
                   </p>
-                  <div className="space-y-1.5">
+                  <div className="space-y-1">
                     {loggedInUser.permissions.map((perm, i) => (
-                      <div key={i} className="flex items-center gap-2 text-xs text-charcoal-800">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-forest-700 flex-shrink-0" />
+                      <div key={i} className="flex items-center gap-1.5 text-[11px] text-charcoal-800">
+                        <CheckCircle2 className="w-3 h-3 text-forest-700 flex-shrink-0" />
                         <span>{perm}</span>
                       </div>
                     ))}
@@ -233,13 +233,13 @@ export default function LoginPage({ onNavigateHome, onLoginSuccess }) {
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex flex-col gap-2.5">
+                <div className="flex flex-col gap-2">
                   <button
                     onClick={() => alert(`Redirecting to ${loggedInUser.roleName} Institutional Portal Workspace...`)}
-                    className="w-full py-3 px-4 rounded-xl bg-forest-900 hover:bg-forest-800 text-white font-semibold text-sm transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
+                    className="w-full py-2.5 px-4 rounded-xl bg-forest-900 hover:bg-forest-800 text-white font-semibold text-xs transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <span>Launch Portal Workspace</span>
-                    <ArrowRight className="w-4 h-4 text-gold-400" />
+                    <ArrowRight className="w-3.5 h-3.5 text-gold-400" />
                   </button>
 
                   <button
@@ -248,9 +248,9 @@ export default function LoginPage({ onNavigateHome, onLoginSuccess }) {
                       setIdentifier('');
                       setPassword('');
                     }}
-                    className="w-full py-2.5 px-4 rounded-xl border border-gray-300 hover:bg-gray-50 text-charcoal-700 font-medium text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                    className="w-full py-2 px-4 rounded-xl border border-gray-300 hover:bg-gray-50 text-charcoal-700 font-medium text-[11px] transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
                   >
-                    <LogOut className="w-3.5 h-3.5 text-gray-500" />
+                    <LogOut className="w-3 h-3 text-gray-500" />
                     <span>Switch User / Log Out</span>
                   </button>
                 </div>
@@ -258,35 +258,39 @@ export default function LoginPage({ onNavigateHome, onLoginSuccess }) {
 
             ) : (
 
-              /* ── CLEAN LOGIN FORM (Exact Match to Reference Image 2) ── */
+              /* ── COMPACT LOGIN FORM (Matching Image 2) ── */
               <div>
                 
-                {/* Form Header with Crest Logo from Hero */}
-                <div className="flex flex-col items-center text-center mb-6">
-                  {/* Exact Hero Crest Emblem */}
-                  <div className="mb-3">
-                    <GisEmblem size="lg" className="ring-2 ring-gold-500/50 shadow-md" />
+                {/* Form Header with High-Clarity Crest Logo */}
+                <div className="flex flex-col items-center text-center mb-4 sm:mb-5">
+                  <div className="w-16 h-16 sm:w-18 sm:h-18 rounded-full overflow-hidden bg-white ring-2 ring-[#C5A880] shadow-md flex items-center justify-center p-1 mx-auto mb-2.5">
+                    <img
+                      src="/gis-crest.jpg"
+                      alt="Greenfield International School Crest"
+                      className="w-full h-full object-contain select-none pointer-events-none"
+                      draggable={false}
+                    />
                   </div>
 
-                  <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#0B2E23] tracking-tight">
+                  <h2 className="font-serif text-xl sm:text-2xl font-bold text-[#0B2E23] tracking-tight">
                     Welcome Back
                   </h2>
-                  <p className="text-xs sm:text-sm text-gray-500 mt-1">
+                  <p className="text-[11px] sm:text-xs text-gray-500 mt-0.5">
                     Login to your Greenfield International School account
                   </p>
                 </div>
 
                 {/* Login Form */}
-                <form onSubmit={handleLogin} className="space-y-4">
+                <form onSubmit={handleLogin} className="space-y-3 sm:space-y-3.5">
                   
                   {/* Email / User ID field */}
                   <div>
-                    <label className="block text-xs font-semibold text-charcoal-800 mb-1.5">
+                    <label className="block text-[11px] font-semibold text-charcoal-800 mb-1">
                       Email / User ID
                     </label>
                     <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
-                        <Mail className="w-4 h-4" />
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                        <Mail className="w-3.5 h-3.5" />
                       </div>
                       <input
                         type="text"
@@ -294,19 +298,19 @@ export default function LoginPage({ onNavigateHome, onLoginSuccess }) {
                         value={identifier}
                         onChange={(e) => setIdentifier(e.target.value)}
                         placeholder="Enter your email or user ID"
-                        className="w-full pl-10 pr-4 py-2.5 sm:py-3 text-sm bg-gray-50/70 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-forest-800 focus:bg-white transition-all text-charcoal-900 placeholder:text-gray-400"
+                        className="w-full pl-9 pr-3 py-2 sm:py-2.5 text-xs sm:text-sm bg-gray-50/70 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-forest-800 focus:bg-white transition-all text-charcoal-900 placeholder:text-gray-400"
                       />
                     </div>
                   </div>
 
                   {/* Password field */}
                   <div>
-                    <label className="block text-xs font-semibold text-charcoal-800 mb-1.5">
+                    <label className="block text-[11px] font-semibold text-charcoal-800 mb-1">
                       Password
                     </label>
                     <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
-                        <Lock className="w-4 h-4" />
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                        <Lock className="w-3.5 h-3.5" />
                       </div>
                       <input
                         type={showPassword ? 'text' : 'password'}
@@ -314,14 +318,14 @@ export default function LoginPage({ onNavigateHome, onLoginSuccess }) {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="Enter your password"
-                        className="w-full pl-10 pr-10 py-2.5 sm:py-3 text-sm bg-gray-50/70 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-forest-800 focus:bg-white transition-all text-charcoal-900 placeholder:text-gray-400"
+                        className="w-full pl-9 pr-9 py-2 sm:py-2.5 text-xs sm:text-sm bg-gray-50/70 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-forest-800 focus:bg-white transition-all text-charcoal-900 placeholder:text-gray-400"
                       />
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none cursor-pointer"
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none cursor-pointer"
                       >
-                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
                       </button>
                     </div>
                   </div>
@@ -331,7 +335,7 @@ export default function LoginPage({ onNavigateHome, onLoginSuccess }) {
                     <button
                       type="button"
                       onClick={() => setForgotPasswordOpen(true)}
-                      className="text-xs font-semibold text-forest-800 hover:text-forest-950 transition-colors cursor-pointer"
+                      className="text-[11px] font-semibold text-forest-800 hover:text-forest-950 transition-colors cursor-pointer"
                     >
                       Forgot password?
                     </button>
@@ -341,14 +345,14 @@ export default function LoginPage({ onNavigateHome, onLoginSuccess }) {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full py-3 sm:py-3.5 px-4 rounded-xl bg-[#0D3B2E] hover:bg-[#07241B] text-white font-semibold text-sm transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 group cursor-pointer disabled:opacity-75"
+                    className="w-full py-2.5 sm:py-3 px-4 rounded-xl bg-[#0D3B2E] hover:bg-[#07241B] text-white font-semibold text-xs sm:text-sm transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 group cursor-pointer disabled:opacity-75"
                   >
                     {loading ? (
-                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                     ) : (
                       <>
                         <span>Login</span>
-                        <ArrowRight className="w-4 h-4 text-gold-400 group-hover:translate-x-0.5 transition-transform" />
+                        <ArrowRight className="w-3.5 h-3.5 text-gold-400 group-hover:translate-x-0.5 transition-transform" />
                       </>
                     )}
                   </button>
@@ -356,8 +360,8 @@ export default function LoginPage({ onNavigateHome, onLoginSuccess }) {
                 </form>
 
                 {/* Administrative Registration Notice */}
-                <div className="mt-6 pt-4 border-t border-gray-100 text-center">
-                  <p className="text-xs text-gray-500">
+                <div className="mt-4 pt-3 border-t border-gray-100 text-center">
+                  <p className="text-[11px] text-gray-500">
                     Don't have an account?{' '}
                     <button
                       type="button"
@@ -375,6 +379,7 @@ export default function LoginPage({ onNavigateHome, onLoginSuccess }) {
           </motion.div>
 
         </div>
+
 
       </div>
 

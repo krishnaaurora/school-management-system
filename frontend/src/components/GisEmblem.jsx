@@ -10,17 +10,18 @@ export default function GisEmblem({ size = "md", className = "" }) {
 
   return (
     <div
-      className={`relative rounded-full overflow-hidden flex items-center justify-center flex-shrink-0 select-none bg-[#FAF7F2] ring-1.5 ring-[#C5A880]/60 shadow-sm ${
+      className={`relative rounded-full overflow-hidden flex items-center justify-center flex-shrink-0 select-none bg-white ring-2 ring-[#C5A880] shadow-sm p-0.5 ${
         sizeClasses[size] || sizeClasses.md
       } ${className}`}
     >
       <img
         src="/gis-crest.jpg"
         alt="Greenfield International School Crest"
-        className="w-full h-full object-contain mix-blend-multiply select-none pointer-events-none p-0.5"
+        className="w-full h-full object-contain select-none pointer-events-none"
         draggable={false}
       />
     </div>
   );
 }
+
 
