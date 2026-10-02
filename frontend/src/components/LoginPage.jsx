@@ -189,43 +189,43 @@ export default function LoginPage({ onNavigateHome, onLoginSuccess }) {
           </motion.div>
         </div>
 
-        {/* RIGHT COLUMN: Clean, Compact Login Card */}
-        <div className="relative z-10 w-full lg:w-2/5 flex items-center justify-center p-3 sm:p-5 lg:p-6">
+        {/* RIGHT COLUMN: Clean, Balanced Login Card */}
+        <div className="relative z-10 w-full lg:w-2/5 flex items-center justify-center p-4 sm:p-6 lg:p-8">
           
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="w-full max-w-[315px] sm:max-w-[330px] bg-white rounded-2xl shadow-2xl border border-gray-100/90 p-4 sm:p-5 relative overflow-hidden"
+            className="w-full max-w-[350px] sm:max-w-[365px] bg-white rounded-2xl shadow-2xl border border-gray-100 p-5 sm:p-6 relative overflow-hidden"
           >
             
             {loggedInUser ? (
               /* ── LOGGED IN DASHBOARD VIEW ── */
-              <div className="py-1 text-center">
-                <div className="w-12 h-12 rounded-full bg-forest-50 border-2 border-forest-800/30 flex items-center justify-center mx-auto mb-2">
-                  <CheckCircle2 className="w-7 h-7 text-forest-800" />
+              <div className="py-2 text-center">
+                <div className="w-14 h-14 rounded-full bg-forest-50 border-2 border-forest-800/30 flex items-center justify-center mx-auto mb-2.5">
+                  <CheckCircle2 className="w-8 h-8 text-forest-800" />
                 </div>
 
-                <div className="inline-block px-2.5 py-0.5 rounded-full text-[9.5px] font-bold uppercase tracking-wider mb-1.5 border border-forest-800/20 bg-forest-50 text-forest-900">
+                <div className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider mb-2 border border-forest-800/20 bg-forest-50 text-forest-900">
                   {loggedInUser.roleName}
                 </div>
 
-                <h2 className="font-serif text-lg font-bold text-[#0B2E23] mb-0.5">
+                <h2 className="font-serif text-xl font-bold text-[#0B2E23] mb-0.5">
                   Welcome, {loggedInUser.name}
                 </h2>
-                <p className="text-[10.5px] text-gray-500 mb-3 font-mono">
+                <p className="text-[11px] text-gray-500 mb-3.5 font-mono">
                   {loggedInUser.email} &bull; {loggedInUser.id}
                 </p>
 
                 {/* Role Permissions */}
-                <div className="text-left bg-[#F8F5EF] p-2.5 rounded-xl border border-gray-200 mb-3">
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-[#0B2E23] mb-1.5">
+                <div className="text-left bg-[#F8F5EF] p-3 rounded-xl border border-gray-200 mb-3.5">
+                  <p className="text-[10.5px] font-bold uppercase tracking-wider text-[#0B2E23] mb-1.5">
                     Authorized Portal Modules:
                   </p>
                   <div className="space-y-1">
                     {loggedInUser.permissions.map((perm, i) => (
-                      <div key={i} className="flex items-center gap-1.5 text-[10.5px] text-charcoal-800">
-                        <CheckCircle2 className="w-3 h-3 text-forest-700 flex-shrink-0" />
+                      <div key={i} className="flex items-center gap-1.5 text-[11px] text-charcoal-800">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-forest-700 flex-shrink-0" />
                         <span>{perm}</span>
                       </div>
                     ))}
@@ -233,10 +233,10 @@ export default function LoginPage({ onNavigateHome, onLoginSuccess }) {
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex flex-col gap-1.5">
+                <div className="flex flex-col gap-2">
                   <button
                     onClick={() => alert(`Redirecting to ${loggedInUser.roleName} Institutional Portal Workspace...`)}
-                    className="w-full py-2 px-3 rounded-xl bg-forest-900 hover:bg-forest-800 text-white font-semibold text-[11px] transition-all shadow-md flex items-center justify-center gap-1.5 cursor-pointer"
+                    className="w-full py-2.5 px-4 rounded-xl bg-forest-900 hover:bg-forest-800 text-white font-semibold text-xs transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <span>Launch Portal Workspace</span>
                     <ArrowRight className="w-3.5 h-3.5 text-gold-400" />
@@ -248,9 +248,9 @@ export default function LoginPage({ onNavigateHome, onLoginSuccess }) {
                       setIdentifier('');
                       setPassword('');
                     }}
-                    className="w-full py-1.5 px-3 rounded-xl border border-gray-300 hover:bg-gray-50 text-charcoal-700 font-medium text-[10.5px] transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                    className="w-full py-2 px-4 rounded-xl border border-gray-300 hover:bg-gray-50 text-charcoal-700 font-medium text-[11px] transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
                   >
-                    <LogOut className="w-3 h-3 text-gray-500" />
+                    <LogOut className="w-3.5 h-3.5 text-gray-500" />
                     <span>Switch User / Log Out</span>
                   </button>
                 </div>
@@ -262,13 +262,13 @@ export default function LoginPage({ onNavigateHome, onLoginSuccess }) {
               <div>
                 
                 {/* Form Header with High-Clarity, Prominent Crest Logo */}
-                <div className="flex flex-col items-center text-center mb-3 sm:mb-3.5">
-                  <div className="relative mb-2">
+                <div className="flex flex-col items-center text-center mb-4 sm:mb-4.5">
+                  <div className="relative mb-2.5">
                     {/* Subtle gold halo glow */}
-                    <div className="absolute inset-0 rounded-full bg-[#C5A880]/20 blur-md transform scale-110" />
+                    <div className="absolute inset-0 rounded-full bg-[#C5A880]/25 blur-md transform scale-110" />
                     
-                    {/* Logo container with razor-sharp contrast & gold border */}
-                    <div className="relative w-16 h-16 sm:w-18 sm:h-18 rounded-full overflow-hidden bg-[#FAF7F2] ring-2 ring-[#C5A880] shadow-md flex items-center justify-center p-0.5">
+                    {/* Logo container enlarged for razor-sharp clarity & elegance */}
+                    <div className="relative w-20 h-20 sm:w-22 sm:h-22 rounded-full overflow-hidden bg-[#FAF7F2] ring-[2.5px] ring-[#C5A880] shadow-lg flex items-center justify-center p-1">
                       <img
                         src="/gis-crest.jpg"
                         alt="Greenfield International School Crest"
@@ -278,24 +278,24 @@ export default function LoginPage({ onNavigateHome, onLoginSuccess }) {
                     </div>
                   </div>
 
-                  <h2 className="font-serif text-lg sm:text-xl font-bold text-[#0B2E23] tracking-tight leading-tight">
+                  <h2 className="font-serif text-xl sm:text-2xl font-bold text-[#0B2E23] tracking-tight leading-tight">
                     Welcome Back
                   </h2>
-                  <p className="text-[10.5px] sm:text-[11px] text-gray-500 mt-0.5 max-w-[240px]">
-                    Login to your Greenfield account
+                  <p className="text-xs text-gray-500 mt-1">
+                    Login to your Greenfield International School account
                   </p>
                 </div>
 
                 {/* Login Form */}
-                <form onSubmit={handleLogin} className="space-y-2.5 sm:space-y-3">
+                <form onSubmit={handleLogin} className="space-y-3 sm:space-y-3.5">
                   
                   {/* Email / User ID field */}
                   <div>
-                    <label className="block text-[10.5px] font-semibold text-charcoal-800 mb-0.5">
+                    <label className="block text-[11px] font-semibold text-charcoal-800 mb-1">
                       Email / User ID
                     </label>
                     <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-gray-400">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
                         <Mail className="w-3.5 h-3.5" />
                       </div>
                       <input
@@ -303,19 +303,19 @@ export default function LoginPage({ onNavigateHome, onLoginSuccess }) {
                         required
                         value={identifier}
                         onChange={(e) => setIdentifier(e.target.value)}
-                        placeholder="Enter email or user ID"
-                        className="w-full pl-8 pr-2.5 py-1.5 sm:py-2 text-xs bg-gray-50/70 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-forest-800 focus:bg-white transition-all text-charcoal-900 placeholder:text-gray-400"
+                        placeholder="Enter your email or user ID"
+                        className="w-full pl-9 pr-3 py-2 sm:py-2.5 text-xs sm:text-sm bg-gray-50/70 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-forest-800 focus:bg-white transition-all text-charcoal-900 placeholder:text-gray-400"
                       />
                     </div>
                   </div>
 
                   {/* Password field */}
                   <div>
-                    <label className="block text-[10.5px] font-semibold text-charcoal-800 mb-0.5">
+                    <label className="block text-[11px] font-semibold text-charcoal-800 mb-1">
                       Password
                     </label>
                     <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-gray-400">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
                         <Lock className="w-3.5 h-3.5" />
                       </div>
                       <input
@@ -323,13 +323,13 @@ export default function LoginPage({ onNavigateHome, onLoginSuccess }) {
                         required
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Enter password"
-                        className="w-full pl-8 pr-8 py-1.5 sm:py-2 text-xs bg-gray-50/70 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-forest-800 focus:bg-white transition-all text-charcoal-900 placeholder:text-gray-400"
+                        placeholder="Enter your password"
+                        className="w-full pl-9 pr-9 py-2 sm:py-2.5 text-xs sm:text-sm bg-gray-50/70 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-forest-800 focus:bg-white transition-all text-charcoal-900 placeholder:text-gray-400"
                       />
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute inset-y-0 right-0 pr-2.5 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none cursor-pointer"
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none cursor-pointer"
                       >
                         {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
                       </button>
@@ -341,7 +341,7 @@ export default function LoginPage({ onNavigateHome, onLoginSuccess }) {
                     <button
                       type="button"
                       onClick={() => setForgotPasswordOpen(true)}
-                      className="text-[10px] font-semibold text-forest-800 hover:text-forest-950 transition-colors cursor-pointer"
+                      className="text-[11px] font-semibold text-forest-800 hover:text-forest-950 transition-colors cursor-pointer"
                     >
                       Forgot password?
                     </button>
@@ -351,10 +351,10 @@ export default function LoginPage({ onNavigateHome, onLoginSuccess }) {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full py-2 sm:py-2.5 px-3 rounded-xl bg-[#0D3B2E] hover:bg-[#07241B] text-white font-semibold text-xs transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-1.5 group cursor-pointer disabled:opacity-75"
+                    className="w-full py-2.5 sm:py-3 px-4 rounded-xl bg-[#0D3B2E] hover:bg-[#07241B] text-white font-semibold text-xs sm:text-sm transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 group cursor-pointer disabled:opacity-75"
                   >
                     {loading ? (
-                      <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                     ) : (
                       <>
                         <span>Login</span>
@@ -366,8 +366,8 @@ export default function LoginPage({ onNavigateHome, onLoginSuccess }) {
                 </form>
 
                 {/* Administrative Registration Notice */}
-                <div className="mt-3 pt-2.5 border-t border-gray-100 text-center">
-                  <p className="text-[10px] text-gray-500">
+                <div className="mt-4 pt-3 border-t border-gray-100 text-center">
+                  <p className="text-[11px] text-gray-500">
                     Don't have an account?{' '}
                     <button
                       type="button"
